@@ -1,5 +1,3 @@
 # PPOthesis
 
-we are on the develop branch
-
-added feature
+docker or singularity
