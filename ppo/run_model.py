@@ -48,10 +48,8 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    print(f"loading weights from {MODEL_PATH}")
-    ppo.load_weights(MODEL_PATH)
-    
-    
+    print(f"Loading weights from '{MODEL_PATH}'")
+    ppo.load_weights(MODEL_PATH) 
     
     ppo.run(
         env,

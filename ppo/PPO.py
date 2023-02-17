@@ -266,7 +266,7 @@ class PPO:
         if render and record:
             env.reset()
             single_env.render()    
-            input("Press ENTER to begin running")
+            input("==> Press ENTER to begin running")
         
         print_chapter_style(f"Running for {num_of_episodes} episodes")
         # print(f" ^ ^ ^ Running for {num_of_episodes} episodes ^ ^ ^ ")
