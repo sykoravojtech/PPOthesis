@@ -38,7 +38,7 @@ class PPO:
 
     def save_weights(self, filename='model'):
         # TODO remake for h5 version where weights are in one file
-        self.model.save_weights(filename)
+        self.model.save_weights(filename, save_format="h5")
 
     def load_weights(self, filename='model'):
         self.model.load_weights(filename)
@@ -263,7 +263,7 @@ class PPO:
         if num_of_episodes == 0:
             num_of_episodes = 999
             
-        if render and record:
+        if record:
             env.reset()
             single_env.render()    
             input("==> Press ENTER to begin running")
@@ -271,7 +271,7 @@ class PPO:
         print_chapter_style(f"Running for {num_of_episodes} episodes")
         # print(f" ^ ^ ^ Running for {num_of_episodes} episodes ^ ^ ^ ")
         
-        for ep in range(num_of_episodes):
+        for ep in range(1, num_of_episodes + 1):
             done = False
             state, _ = env.reset()
             step = 0
@@ -287,4 +287,4 @@ class PPO:
                 state = next_state
                 step += 1
                 
-            print(f"episode {ep}: {score = :.0f}")
+            # print(f"episode {ep}: {score = :.0f}")
