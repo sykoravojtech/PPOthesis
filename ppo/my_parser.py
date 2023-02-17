@@ -10,7 +10,6 @@ def create_parser():
     parser.add_argument("-gae", "--gae_lambda", default=0.9, type=float, help="gae_lambda") # 0.9-1
     parser.add_argument("-lr", "--learning_rate", default=2.5e-4, type=float, help="Learning rate - alpha.")
     parser.add_argument("--constant_lr", default=False, action="store_true", help="Constant or discounted learning rate")
-    # parser.add_argument("--lr_discount", default=7e-6, type=float, help="Learning rate discount factor")
     parser.add_argument("-t", "--training_episodes", default=4000, type=int, help="Training episodes.")
     parser.add_argument("-s", "-horizon", "--steps_per_ep", default=2250, type=int, help="Steps per episode - since we have multiple envs we don't end when done")
     parser.add_argument("-b", "--batch_size", default=1024, type=int, help="Batch/minibatch size")
@@ -25,10 +24,15 @@ def create_parser():
     parser.add_argument("-log", "--tensorboard", default=True, action="store_false", help="Tensorboard logging")
     parser.add_argument("-print_freq", "--print_ep_info_freq", default=1, type=int, help="Each Nth episide print info about episode")
     parser.add_argument("--num_envs", default=6, type=int, help="Number of parallel environments")
-    # parser.add_argument("--render_each", default=100, type=int, help="Render some episodes.")
     parser.add_argument("--render", default=False, action="store_true", help="Render episodes.")
     parser.add_argument("--record", default=False, action="store_true", help="for now renders window and waits for ENTER to start running, TODO:Record episodes.")
-    
+    parser.add_argument("--env", default="CarRacing-v2", help="Environment name")
+    parser.add_argument("--report_each", default=1, type=int, help="Print each nth episode a report")
+    parser.add_argument("--evaluate_for", default=10, type=int, help="Evaluate mean score for N episodes")
+    parser.add_argument("--render_each", default=2, type=int, help="Render each nth episode as human viewable")
+
+
+
 
 
     # parser.add_argument("--learn_every", default=20, type=int, help="N")
