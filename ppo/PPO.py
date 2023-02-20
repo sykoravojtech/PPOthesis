@@ -244,7 +244,8 @@ class PPO:
             # save weights to be able to load the model later
             if ep % save_interval == 0:
                 chkpt_dir = os.path.join(models_dir, f"ep{ep}")
-                weights_dir = os.path.join(chkpt_dir, "weights")
+                os.makedirs(chkpt_dir)
+                weights_dir = os.path.join(chkpt_dir, f"ep{ep}_weights")
                 print(f"    ... Saving model ep={ep} ...")
                 self.save_weights(weights_dir)
                 save_pltgraph(avg_score_history, chkpt_dir, ep, starting_episode)

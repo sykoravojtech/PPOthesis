@@ -16,7 +16,7 @@ import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
 MODEL_PATH = "BEST/ep1330/weights"
-RUN_FOR = 50
+RUN_FOR = 10
 
 if __name__ == '__main__':
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
