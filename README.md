@@ -17,3 +17,8 @@ run the singularity image
 ```
 cd /mnt/personal/sykorvo1/PPOthesis/ppo; singularity run --bind /mnt/personal/sykorvo1:/mnt/personal/sykorvo1 --nv tensorflow_2.10.0-gpu.sif
 ```
+
+and now you have the terminal to run anything you like. For example
+```
+python run_model.py
+```
