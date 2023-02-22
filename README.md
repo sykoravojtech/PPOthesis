@@ -15,5 +15,5 @@ srun -p amdgpufast --gres=gpu:1 --pty bash -i
 
 run the singularity image
 ```
-cd /mnt/personal/sykorvo1/PPOthesis; singularity run --bind /mnt/personal/sykorvo1:/mnt/personal/sykorvo1 --nv tensorflow_2.10.0-gpu.sif
+cd /mnt/personal/sykorvo1/PPOthesis/ppo; singularity run --bind /mnt/personal/sykorvo1:/mnt/personal/sykorvo1 --nv tensorflow_2.10.0-gpu.sif
 ```
