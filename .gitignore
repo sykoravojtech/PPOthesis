@@ -82,5 +82,6 @@ __pypackages__/
 ppo/models
 
 # Slurm files
+slurm/
 *.out
 *.err
