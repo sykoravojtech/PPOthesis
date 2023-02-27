@@ -1,10 +1,16 @@
-from gym import ObservationWrapper, spaces, ActionWrapper
+from gym import ObservationWrapper, ActionWrapper, spaces
 import gym
 import numpy as np
-from collections import deque
 import sys, os
-# import cv2
+from utils import *
+from random import randint
 
+PLUSMINUS = "\u00B1"
+
+################ ACTION WRAPPERS #################
+
+# easier calculation of wind
+# easier working with numbers
 class ClippedAction(ActionWrapper):
     def __init__(self, env:gym.Env, low=0, high=1):
         super().__init__(env)
@@ -18,6 +24,77 @@ class ClippedAction(ActionWrapper):
         L, H = self.old_low, self.old_high
 
         return (action-l)/(h-l)*(H-L)+L
+    
+class ContinuousLeftWind(ActionWrapper):
+    def __init__(self, env:gym.Env, strength=0.4):
+        super().__init__(env)
+        self.strength = 1 - strength # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
+        self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
+        print_notification_style(f"LeftWind strength: {strength*100}%")
+
+    def action(self, action):
+        new_action = np.copy(action)
+        modified = new_action[self.index] * self.strength
+        new_action[self.index] = modified if modified >= 0 else 0
+        # print(f"LeftWind:\n\t{action}\n\t{new_action}")
+        return new_action
+
+
+class GustyLeftWind(ActionWrapper): # nárazový vítr
+    """
+    Args:
+        strength (float): percentage change of action
+        nonwind_step_range (float): how many steps will be WITHOUT wind
+        wind_step_range (float): how many steps will be WITH wind
+    """
+    def __init__(self, env:gym.Env, strength=0.4, nonwind_step_range = (10, 50), wind_step_range = (20,50)):
+        super().__init__(env)
+        self.strength = 1 - strength # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
+        self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
+        self.nonwind_step_range = nonwind_step_range
+        self.wind_step_range = wind_step_range
+        self.wind = False
+        self.curr_step = 0
+        self.wind_step = 0
+        self.max_wind = randint(*wind_step_range)
+        self.max_nonwind = randint(*nonwind_step_range)
+        print_notification_style(f"LeftWind strength: {strength*100}% {nonwind_step_range=} {wind_step_range=}")
+
+    def action(self, action):
+        self.curr_step += 1
+        if self.wind: # apply wind
+            self.wind_step += 1
+            
+            new_action = np.copy(action)
+            modified = new_action[self.index] * self.strength
+            new_action[self.index] = modified if modified >= 0 else 0
+            print(f"GustyLeftWind({self.curr_step},{self.wind_step}):wind\n\t{action}\n\t{new_action}")
+            
+            if self.wind_step >= self.max_wind:
+                self.wind = False
+                self.wind_step = 0
+            
+            return new_action
+        else: # nonwind
+            self.wind_step += 1
+            print(f"GustyLeftWind({self.curr_step},{self.wind_step}):NONwind {action}")
+            
+            if self.wind_step >= self.max_nonwind:
+                self.wind = True
+                self.wind_step = 0
+            return action
+
+class PrintAction(ActionWrapper):
+    def __init__(self, env:gym.Env):
+        super().__init__(env)
+        self.x = 0
+
+    def action(self, action):
+        self.x += 1
+        print(f"ActionWrapper({self.x}): {action}")
+        return action
+
+############### OBSERVATION WRAPPERS ################
 
 class NormalizeObservation(ObservationWrapper):
     def __init__(self, env):
@@ -45,6 +122,14 @@ class expand_dim_obs(ObservationWrapper):
 
     def observation(self, obs):
         return np.expand_dims(obs, axis=0)
+    
+class PrintObservation(ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+
+    def observation(self, observation):
+        print(f"ObservationWrapper: {observation}")
+        return observation
     
 # class expand_dim_act(ActionWrapper):
 #     def __init__(self, env:gym.Env):
@@ -110,13 +195,13 @@ class EvaluationEnv(gym.Wrapper):
 
             if self._report_each and self.episode % self._report_each == 0:
                 self._mean_episode_returns.append(np.mean(self._episode_returns[-self._evaluate_for:])) # ADDED
-                print("Episode {}, mean {}-episode return {:.2f} +-{:.2f}{}".format(
-                    self.episode, self._evaluate_for, np.mean(self._episode_returns[-self._evaluate_for:]),
-                    np.std(self._episode_returns[-self._evaluate_for:]), "" if not self._report_verbose else
-                    ", returns " + " ".join(map("{:g}".format, self._episode_returns[-self._report_each:]))),
+                print(f"{bcolors.BLUE}Episode {self.episode}, mean {self._evaluate_for}-episode return "
+                    f"{np.mean(self._episode_returns[-self._evaluate_for:]):.2f} "
+                    f"{PLUSMINUS} {np.std(self._episode_returns[-self._evaluate_for:]):.2f}"
+                    f"{'' if not self._report_verbose else ', returns ' + ' '.join(map('{:g}'.format, self._episode_returns[-self._report_each:]))}{bcolors.ENDC}",
                     file=sys.stderr, flush=True)
             if self._evaluating_from is not None and self.episode >= self._evaluating_from + self._evaluate_for:
-                print("The mean {}-episode return after evaluation {:.2f} +-{:.2f}".format(
+                print("The mean {}-episode return after evaluation {:.2f} \u00B1 {:.2f}".format(
                     self._evaluate_for, np.mean(self._episode_returns[-self._evaluate_for:]),
                     np.std(self._episode_returns[-self._evaluate_for:])), flush=True)
                 self.close()

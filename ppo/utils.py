@@ -8,6 +8,31 @@ from time import sleep
 import random
 from my_parser import *
 
+# colors for printing in the terminal
+class bcolors:
+    PURPLE = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    ITALICIZE = '\033[3m'
+    UNDERLINE = '\033[4m'
+    PURPLE_BACK = '\033[105m'
+    
+def show_terminal_colors():
+    print(f"{bcolors.PURPLE} Header {bcolors.ENDC}")
+    print(f"{bcolors.BLUE} blue {bcolors.ENDC}")
+    print(f"{bcolors.CYAN} cyan {bcolors.ENDC}")
+    print(f"{bcolors.GREEN} green {bcolors.ENDC}")
+    print(f"{bcolors.YELLOW} warning {bcolors.ENDC}")
+    print(f"{bcolors.RED} fail {bcolors.ENDC}")
+    print(f"{bcolors.BOLD} bold {bcolors.ENDC}")
+    print(f"{bcolors.ITALICIZE} italicize {bcolors.ENDC}")
+    print(f"{bcolors.UNDERLINE} underline {bcolors.ENDC}")
+
 def get_logger(model_dir, tensorboard=False):
     """
     tensorboard --logdir='/your/path/here'
@@ -19,11 +44,11 @@ def get_logger(model_dir, tensorboard=False):
     return None
 
 def print_info(env, args):
-    print("==== ENV INFO ====")
-    print(f"{env.action_space=}\n{env.observation_space=}")
+    print(f"==== {bcolors.PURPLE}ENV INFO{bcolors.ENDC} ====")
+    print(f"{bcolors.PURPLE_BACK}{env.action_space=}\n{env.observation_space=}{bcolors.ENDC}")
     print("==================")
-    print("====== ARGS ======")
-    print(args.__dict__)
+    print(f"====== {bcolors.PURPLE}ARGS{bcolors.ENDC} ======")
+    print(f"{bcolors.PURPLE_BACK}{args.__dict__}{bcolors.ENDC}")
     print("==================")
 
 def get_curr_datetime(microsecond=False):
@@ -77,19 +102,19 @@ def create_subfolder(models_dir, addon=""):
 
 def print_chapter_style(text):
     print("=" * (len(text) + 8))
-    print(f">>> {text} <<<")
+    print(f">>> {bcolors.PURPLE}{text}{bcolors.ENDC} <<<")
     print("=" * (len(text) + 8))
     
 def print_notification_style(text):
-    print(f">> {text}")
+    print(f">> {bcolors.CYAN}{text}{bcolors.ENDC}")
     
 def print_tensorflow_version():
     import tensorflow as tf
-    print(f"TensorFlow version = {tf.__version__}")
+    print_notification_style(f"TensorFlow version = {tf.__version__}")
     
 def print_available_devices():
     from tensorflow.python.client import device_lib
-    print(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")
+    print_notification_style(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")
 
 ################ OLD
 

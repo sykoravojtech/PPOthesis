@@ -9,16 +9,18 @@ import numpy as np
 
 from my_parser import create_parser
 from PPO import PPO
-from wrappers import NormalizeObservation, ClippedAction, EvaluationEnv
+from wrappers import *
 from utils import *
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
 MODEL_PATH = "BEST/ep1330/weights"
-RUN_FOR = 10
+RUN_FOR = 1
 
 if __name__ == '__main__':
+    show_terminal_colors()
+    
     print_tensorflow_version()
     print_available_devices()
         
@@ -38,6 +40,9 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
+    # single_env = GustyLeftWind(single_env, 0.15)
+    # single_env = ContinuousLeftWind(single_env, 0.2)
+    # single_env = PrintAction(single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
