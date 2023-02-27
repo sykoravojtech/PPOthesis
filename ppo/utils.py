@@ -79,6 +79,17 @@ def print_chapter_style(text):
     print("=" * (len(text) + 8))
     print(f">>> {text} <<<")
     print("=" * (len(text) + 8))
+    
+def print_notification_style(text):
+    print(f">> {text}")
+    
+def print_tensorflow_version():
+    import tensorflow as tf
+    print(f"TensorFlow version = {tf.__version__}")
+    
+def print_available_devices():
+    from tensorflow.python.client import device_lib
+    print(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")
 
 ################ OLD
 

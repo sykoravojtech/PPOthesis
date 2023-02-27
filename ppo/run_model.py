@@ -10,7 +10,7 @@ import numpy as np
 from my_parser import create_parser
 from PPO import PPO
 from wrappers import NormalizeObservation, ClippedAction, EvaluationEnv
-from utils import print_info
+from utils import *
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
@@ -19,6 +19,9 @@ MODEL_PATH = "BEST/ep1330/weights"
 RUN_FOR = 10
 
 if __name__ == '__main__':
+    print_tensorflow_version()
+    print_available_devices()
+        
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
     
     def make_env():
@@ -27,7 +30,7 @@ if __name__ == '__main__':
         else:
             env = gym.make(args.env, render_mode='rgb_array', continuous = True)
         
-        print(env.action_space)
+        # print(env.action_space)
             
         env = NormalizeObservation(env)
         env = ClippedAction(env, low=0, high=1)
@@ -52,7 +55,7 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    print(f"Loading weights from '{MODEL_PATH}'")
+    print_notification_style(f"Loading weights from '{MODEL_PATH}'")
     ppo.load_weights(MODEL_PATH) 
     
     ppo.run(

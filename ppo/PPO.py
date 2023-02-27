@@ -12,7 +12,7 @@ import tensorflow_probability as tfp
 import numpy as np
 
 from actorcritic import get_ActorCritic_model
-from utils import save_pltgraph, print_chapter_style
+from utils import *
 
 # import random
 
@@ -28,7 +28,7 @@ class PPO:
         self.vf_coeff : float = value_fun_coeff
 
         if len(observation_space.shape) == 4:
-            print("... building conv model ...")
+            print_notification_style("Building CNN ActorCritic Model")
             # passing just the pure one observation shape
             self.model = get_ActorCritic_model(
                 observation_space.shape[1:], action_space)
