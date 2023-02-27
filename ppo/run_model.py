@@ -16,12 +16,12 @@ import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
 MODEL_PATH = "BEST/ep1330/weights"
-RUN_FOR = 1
+RUN_FOR = 10
 
 if __name__ == '__main__':
-    show_terminal_colors()
+    # show_terminal_colors()
     
-    print_tensorflow_version()
+    # print_tensorflow_version()
     print_available_devices()
         
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
@@ -40,13 +40,13 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    # single_env = GustyLeftWind(single_env, 0.15)
+    single_env = GustyLeftWind(single_env, 0.15)
     # single_env = ContinuousLeftWind(single_env, 0.2)
     # single_env = PrintAction(single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
-    print_info(single_env, args)
+    # print_info(single_env, args)
     
     # state, _ = env.reset()
     # print(f"{state[0].shape=} {state[0][50]=}")
@@ -60,7 +60,7 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    print_notification_style(f"Loading weights from '{MODEL_PATH}'")
+    # print_notification_style(f"Loading weights from '{MODEL_PATH}'")
     ppo.load_weights(MODEL_PATH) 
     
     ppo.run(
