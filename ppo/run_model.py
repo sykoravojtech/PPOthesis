@@ -16,13 +16,13 @@ import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
 MODEL_PATH = "BEST/projectBEST"
-RUN_FOR = 1
+RUN_FOR = 5
 
 if __name__ == '__main__':
     # show_terminal_colors()
     
     # print_tensorflow_version()
-    print_available_devices()
+    # print_available_devices()
         
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
     
@@ -40,8 +40,8 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    single_env = GustyLeftWind(single_env)
-    # single_env = ContinuousLeftWind(single_env)
+    # single_env = GustyLeftWind(single_env)
+    single_env = ContinuousLeftWind(single_env)
     # single_env = PrintAction(single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])

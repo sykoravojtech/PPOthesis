@@ -238,7 +238,7 @@ class PPO:
 
             # print information about the episode
             if ep % print_freq == 0:
-                print(f'==> episode: {ep}/{num_of_episodes} step={step}, avg score: {avg_score:.3f}')
+                print(f'==> {bcolors.BLUE}episode: {ep}/{num_of_episodes} step={step}, avg score: {avg_score:.3f}{bcolors.ENDC}')
 
             # save weights to be able to load the model later
             if ep % save_interval == 0:

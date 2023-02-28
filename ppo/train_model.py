@@ -66,7 +66,7 @@ if __name__ == '__main__':
                           wrappers=[NormalizeObservation, ClippedAction])
     
     # env = GustyLeftWind(env)
-    env = ContinuousLeftWind(env, 0.15)
+    env = ContinuousLeftWind(env)
     
     print_info(env, args)
     

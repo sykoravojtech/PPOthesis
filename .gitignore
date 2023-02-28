@@ -79,7 +79,13 @@ __pypackages__/
 *.sif
 
 # Models
-ppo/models
+ppo/pureEnv
+ppo/gustyLeft
+ppo/left
+ppo/gustyRight
+ppo/right
+ppo/gustySides
+ppo/sides
 
 # Slurm files
 slurm/

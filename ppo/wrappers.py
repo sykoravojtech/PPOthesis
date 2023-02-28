@@ -29,16 +29,21 @@ class ClippedAction(ActionWrapper):
     
 # TODO make strength for a range
 class ContinuousLeftWind(ActionWrapper):
-    def __init__(self, env:gym.Env, strength=0.4):
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2)):
         super().__init__(env)
-        self.strength = 1 - strength # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
+        self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
-        print_notification_style(f"LeftWind strength: {strength*100}%")
+        self.parallel = len(env.action_space.shape) == 2
+        print_notification_style(f"ContinuousLeftWind: {strength=}")
 
     def action(self, action):
         new_action = np.copy(action)
-        modified = new_action[self.index] * self.strength
-        new_action[self.index] = modified if modified >= 0 else 0
+        curr_strength = uniform(*self.strength)
+        
+        if self.parallel: # vecenv, parallel environments
+            new_action[:, self.index] *= curr_strength
+        else:
+            new_action[self.index] *= curr_strength
         # print(f"LeftWind:\n\t{action}\n\t{new_action}")
         return new_action
 
@@ -61,9 +66,9 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
         self.wind_step = 0
         self.max_wind = randint(*wind_step_range)
         self.max_nonwind = randint(*nonwind_step_range)
-        print_notification_style(f"LeftWind: strength_range={strength} {nonwind_step_range=} {wind_step_range=}")
+        self.parallel = len(env.action_space.shape) == 2
+        print_notification_style(f"GustyLeftWind: strength_range={strength} {nonwind_step_range=} {wind_step_range=} {len(env.action_space.shape)=} {self.parallel=}")
 
-# TODO action is a 2d array so modified is an array, we need to work with that. With vecenv
     def action(self, action):
         self.curr_step += 1
         if self.wind: # apply wind
@@ -71,8 +76,12 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
             
             new_action = np.copy(action)
             curr_strength = uniform(*self.strength)
-            modified = new_action[self.index] * curr_strength
-            new_action[self.index] = modified if modified >= 0 else 0
+            
+            if self.parallel: # vecenv, parallel environments
+                new_action[:, self.index] *= curr_strength
+            else:
+                new_action[self.index] *= curr_strength
+            
             # print(f"GustyLeftWind({self.curr_step},{self.wind_step}):wind strength={curr_strength:.2f}\n\t{action}\n\t{new_action}")
             
             if self.wind_step >= self.max_wind:
