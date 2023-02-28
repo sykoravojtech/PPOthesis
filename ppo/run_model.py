@@ -21,8 +21,8 @@ RUN_FOR = 3
 if __name__ == '__main__':
     # show_terminal_colors()
     
-    # print_tensorflow_version()
-    # print_available_devices()
+    print_tensorflow_version()
+    print_available_devices()
         
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
     
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
-    # print_info(single_env, args)
+    print_info(single_env, args)
     
     # state, _ = env.reset()
     # print(f"{state[0].shape=} {state[0][50]=}")

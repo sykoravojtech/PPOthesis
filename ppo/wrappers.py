@@ -3,7 +3,7 @@ import gym
 import numpy as np
 import sys, os
 from utils import *
-from random import randint, uniform
+from random import randint, uniform, choice
 
 np.set_printoptions(precision=3) # number of decimal places numpy prints
 
@@ -99,7 +99,7 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
 class ContinuousRightWind(ActionWrapper):
     def __init__(self, env:gym.Env, strength=(0.1, 0.2)):
         super().__init__(env)
-        self.strength = (1+strength[0], 1+strength[1]) 
+        self.strength = (1+strength[0], 1+strength[1])
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
         self.parallel = len(env.action_space.shape) == 2
         print_notification_style(f"ContinuousRightWind:\n\t{strength=}")
@@ -170,6 +170,60 @@ class GustyRightWind(ActionWrapper): # nárazový vítr
                 self.wind_step = 0
             return action
 
+RIGHT = +1
+LEFT  = -1
+class ContinuousSidesWind(ActionWrapper):
+    
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2), block_range=(10,50), verbose=False):
+        super().__init__(env)
+        self.left_strength = (1-strength[0], 1-strength[1])
+        self.right_strength = (1+strength[0], 1+strength[1])
+        self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
+        self.wind_step = 0
+        self.max_wind = randint(*block_range)
+        self.parallel = len(env.action_space.shape) == 2
+        self.direction = choice([LEFT, RIGHT])
+        self.block_range = block_range
+        self.verbose = verbose
+        print_notification_style(f"ContinuousSidesWind:\n\t{strength=} starting={self.direction} {block_range=}")
+
+    def action(self, action):
+        new_action = np.copy(action)
+        
+        if self.direction == RIGHT:
+            self.wind_step += 1
+            
+            curr_strength = uniform(*self.right_strength)
+            
+            if self.parallel: # vecenv, parallel environments
+                new_action[:, self.index] *= curr_strength
+                new_action[:, self.index][new_action[:, self.index] > 1.] = 1.
+            else:
+                new_action[self.index] *= curr_strength
+                new_action[self.index] = new_action[self.index] if new_action[self.index] <= 1 else 1
+            
+            if self.wind_step >= self.max_wind:
+                self.direction = LEFT
+                self.wind_step = 0
+                self.max_wind = randint(*self.block_range)
+        else: # LEFT
+            self.wind_step += 1
+            
+            curr_strength = uniform(*self.left_strength)
+            
+            if self.parallel: # vecenv, parallel environments
+                new_action[:, self.index] *= curr_strength
+            else:
+                new_action[self.index] *= curr_strength
+            
+            if self.wind_step >= self.max_wind:
+                self.direction = RIGHT
+                self.wind_step = 0
+                self.max_wind = randint(*self.block_range)
+            
+        if self.verbose: print(f"ContinuousSidesWind({self.wind_step}/{self.max_wind}):dir={self.direction} {curr_strength=}\n\t{action}\n\t{new_action}")
+        return new_action
+
 class PrintAction(ActionWrapper):
     def __init__(self, env:gym.Env):
         super().__init__(env)
@@ -191,6 +245,12 @@ def add_wind_wrapper(name, env):
             env = ContinuousRightWind(env)
         elif name == "gustyright":
             env = GustyRightWind(env)
+        elif name == "sides":
+            env = ContinuousSidesWind(env)
+        # elif name == "gustysides":
+            # env = GustySidesWind(env)
+        else:
+            print(f"{bcolors.RED} ** Wrapper name not found: '{name}' ** {bcolors.ENDC}")
     return env
 
 ############### OBSERVATION WRAPPERS ################
@@ -255,7 +315,7 @@ class EvaluationEnv(gym.Wrapper):
 
         self._episode_running = False
         self._episode_returns = []
-        self._mean_episode_returns = [] # ADDED
+        self._mean_episode_returns = []
         self._evaluating_from = None
         self._original_render_mode = env.render_mode
 
@@ -293,7 +353,7 @@ class EvaluationEnv(gym.Wrapper):
             self._episode_returns.append(self._episode_return)
 
             if self._report_each and self.episode % self._report_each == 0:
-                self._mean_episode_returns.append(np.mean(self._episode_returns[-self._evaluate_for:])) # ADDED
+                self._mean_episode_returns.append(np.mean(self._episode_returns[-self._evaluate_for:]))
                 print(f"{bcolors.BLUE}Episode {self.episode}, mean {self._evaluate_for}-episode return "
                     f"{np.mean(self._episode_returns[-self._evaluate_for:]):.2f} "
                     f"{PLUSMINUS} {np.std(self._episode_returns[-self._evaluate_for:]):.2f}"
