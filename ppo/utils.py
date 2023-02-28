@@ -115,7 +115,7 @@ def print_tensorflow_version():
     
 def print_available_devices():
     from tensorflow.python.client import device_lib
-    print_notification_style(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")
+    print_notification_style(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")   
 
 ################ OLD
 

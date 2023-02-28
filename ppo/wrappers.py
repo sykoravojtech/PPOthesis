@@ -27,14 +27,13 @@ class ClippedAction(ActionWrapper):
 
         return (action-l)/(h-l)*(H-L)+L
     
-# TODO make strength for a range
 class ContinuousLeftWind(ActionWrapper):
     def __init__(self, env:gym.Env, strength=(0.1, 0.2)):
         super().__init__(env)
         self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
         self.parallel = len(env.action_space.shape) == 2
-        print_notification_style(f"ContinuousLeftWind: {strength=}")
+        print_notification_style(f"ContinuousLeftWind:\n\t{strength=}")
 
     def action(self, action):
         new_action = np.copy(action)
@@ -44,9 +43,8 @@ class ContinuousLeftWind(ActionWrapper):
             new_action[:, self.index] *= curr_strength
         else:
             new_action[self.index] *= curr_strength
-        # print(f"LeftWind:\n\t{action}\n\t{new_action}")
+        # print(f"ContinuousLeftWind:\n\t{action}\n\t{new_action}")
         return new_action
-
 
 class GustyLeftWind(ActionWrapper): # nárazový vítr
     """
@@ -67,7 +65,7 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
         self.max_wind = randint(*wind_step_range)
         self.max_nonwind = randint(*nonwind_step_range)
         self.parallel = len(env.action_space.shape) == 2
-        print_notification_style(f"GustyLeftWind: strength_range={strength} {nonwind_step_range=} {wind_step_range=} {len(env.action_space.shape)=} {self.parallel=}")
+        print_notification_style(f"GustyLeftWind:\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
 
     def action(self, action):
         self.curr_step += 1
@@ -98,6 +96,80 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
                 self.wind_step = 0
             return action
 
+class ContinuousRightWind(ActionWrapper):
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2)):
+        super().__init__(env)
+        self.strength = (1+strength[0], 1+strength[1]) 
+        self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
+        self.parallel = len(env.action_space.shape) == 2
+        print_notification_style(f"ContinuousRightWind:\n\t{strength=}")
+
+    def action(self, action):
+        new_action = np.copy(action)
+        curr_strength = uniform(*self.strength)
+        
+        if self.parallel: # vecenv, parallel environments
+            new_action[:, self.index] *= curr_strength
+            new_action[:, self.index][new_action[:, self.index] > 1.] = 1.
+        else:
+            new_action[self.index] *= curr_strength
+            new_action[self.index] = new_action[self.index] if new_action[self.index] <= 1 else 1
+            
+        # print(f"ContinuousRightWind:\n\t{action}\n\t{new_action}")
+        return new_action
+
+class GustyRightWind(ActionWrapper): # nárazový vítr
+    """
+    Args:
+        strength (float): percentage change of action
+        nonwind_step_range (float): how many steps will be WITHOUT wind
+        wind_step_range (float): how many steps will be WITH wind
+    """
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2), nonwind_step_range = (10, 50), wind_step_range = (20,50)):
+        super().__init__(env)
+        self.strength = (1+strength[0], 1+strength[1])
+        self.index = 0 # action[0] is controlling left right movement, (left,right)=(0,1) range
+        self.nonwind_step_range = nonwind_step_range
+        self.wind_step_range = wind_step_range
+        self.wind = False
+        self.curr_step = 0
+        self.wind_step = 0
+        self.max_wind = randint(*wind_step_range)
+        self.max_nonwind = randint(*nonwind_step_range)
+        self.parallel = len(env.action_space.shape) == 2
+        print_notification_style(f"GustyRightWind:\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
+
+    def action(self, action):
+        self.curr_step += 1
+        if self.wind: # apply wind
+            self.wind_step += 1
+            
+            new_action = np.copy(action)
+            curr_strength = uniform(*self.strength)
+            
+            if self.parallel: # vecenv, parallel environments
+                new_action[:, self.index] *= curr_strength
+                new_action[:, self.index][new_action[:, self.index] > 1.] = 1.
+            else:
+                new_action[self.index] *= curr_strength
+                new_action[self.index] = new_action[self.index] if new_action[self.index] <= 1 else 1
+            
+            # print(f"GustyRightWind({self.curr_step},{self.wind_step}):wind strength={curr_strength:.2f}\n\t{action}\n\t{new_action}")
+            
+            if self.wind_step >= self.max_wind:
+                self.wind = False
+                self.wind_step = 0
+            
+            return new_action
+        else: # nonwind
+            self.wind_step += 1
+            # print(f"GustyRightWind({self.curr_step},{self.wind_step}):NONwind {action}")
+            
+            if self.wind_step >= self.max_nonwind:
+                self.wind = True
+                self.wind_step = 0
+            return action
+
 class PrintAction(ActionWrapper):
     def __init__(self, env:gym.Env):
         super().__init__(env)
@@ -107,6 +179,19 @@ class PrintAction(ActionWrapper):
         self.x += 1
         print(f"ActionWrapper({self.x}): {action}")
         return action
+
+def add_wind_wrapper(name, env):
+    if name != None:
+        name = name.lower()
+        if name == "left":
+            env = ContinuousLeftWind(env)
+        elif name == "gustyleft":
+            env = GustyLeftWind(env)
+        elif name == "right":
+            env = ContinuousRightWind(env)
+        elif name == "gustyright":
+            env = GustyRightWind(env)
+    return env
 
 ############### OBSERVATION WRAPPERS ################
 

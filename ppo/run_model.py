@@ -16,7 +16,7 @@ import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
 MODEL_PATH = "BEST/projectBEST"
-RUN_FOR = 5
+RUN_FOR = 3
 
 if __name__ == '__main__':
     # show_terminal_colors()
@@ -40,9 +40,7 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    # single_env = GustyLeftWind(single_env)
-    single_env = ContinuousLeftWind(single_env)
-    # single_env = PrintAction(single_env)
+    single_env = add_wind_wrapper(args.wind_wrapper, single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
