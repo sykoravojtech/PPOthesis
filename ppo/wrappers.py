@@ -221,7 +221,7 @@ class ContinuousSidesWind(ActionWrapper):
                 self.wind_step = 0
                 self.max_wind = randint(*self.block_range)
             
-        if self.verbose: print(f"ContinuousSidesWind({self.wind_step}/{self.max_wind}):dir={self.direction} {curr_strength=}\n\t{action}\n\t{new_action}")
+        if self.verbose: print(f"ContinuousSidesWind({self.wind_step}/{self.max_wind}):dir={'RIGHT' if self.direction == RIGHT else 'LEFT'} {curr_strength=:.3f}\n\t{action}\n\t{new_action}")
         return new_action
 
 class PrintAction(ActionWrapper):
@@ -234,21 +234,21 @@ class PrintAction(ActionWrapper):
         print(f"ActionWrapper({self.x}): {action}")
         return action
 
-def add_wind_wrapper(name, env):
+def add_wind_wrapper(name, env, params = {}):
     if name != None:
         name = name.lower()
         if name == "left":
-            env = ContinuousLeftWind(env)
+            env = ContinuousLeftWind(env, **params)
         elif name == "gustyleft":
-            env = GustyLeftWind(env)
+            env = GustyLeftWind(env, **params)
         elif name == "right":
-            env = ContinuousRightWind(env)
+            env = ContinuousRightWind(env, **params)
         elif name == "gustyright":
-            env = GustyRightWind(env)
+            env = GustyRightWind(env, **params)
         elif name == "sides":
-            env = ContinuousSidesWind(env)
+            env = ContinuousSidesWind(env, **params)
         # elif name == "gustysides":
-            # env = GustySidesWind(env)
+            # env = GustySidesWind(env, **params)
         else:
             print(f"{bcolors.RED} ** Wrapper name not found: '{name}' ** {bcolors.ENDC}")
     return env
