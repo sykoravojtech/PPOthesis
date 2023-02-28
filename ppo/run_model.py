@@ -15,8 +15,8 @@ from utils import *
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 
-MODEL_PATH = "BEST/ep1330/weights"
-RUN_FOR = 10
+MODEL_PATH = "BEST/projectBEST"
+RUN_FOR = 1
 
 if __name__ == '__main__':
     # show_terminal_colors()
@@ -40,8 +40,8 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    single_env = GustyLeftWind(single_env, 0.15)
-    # single_env = ContinuousLeftWind(single_env, 0.2)
+    single_env = GustyLeftWind(single_env)
+    # single_env = ContinuousLeftWind(single_env)
     # single_env = PrintAction(single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
@@ -60,7 +60,7 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    # print_notification_style(f"Loading weights from '{MODEL_PATH}'")
+    print_notification_style(f"Loading weights from '{MODEL_PATH}'")
     ppo.load_weights(MODEL_PATH) 
     
     ppo.run(

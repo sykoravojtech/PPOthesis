@@ -24,6 +24,7 @@ class bcolors:
     
 def show_terminal_colors():
     print(f"{bcolors.PURPLE} Header {bcolors.ENDC}")
+    print(f"{bcolors.PURPLE_BACK} Header info {bcolors.ENDC}")
     print(f"{bcolors.BLUE} blue {bcolors.ENDC}")
     print(f"{bcolors.CYAN} cyan {bcolors.ENDC}")
     print(f"{bcolors.GREEN} green {bcolors.ENDC}")
@@ -71,7 +72,7 @@ def create_dir_for_curr_runtime(models_dir):
     sleep(random.random()) # so that the parallel executions dont save into the same folder
     models_dir = add_curr_time_to_dir(models_dir, microsecond=True)
     os.makedirs(models_dir)
-    print(f"This runtime saved in {models_dir}")
+    print_notification_style(f"This runtime saved in {models_dir}")
     return models_dir
 
 def save_pltgraph(avg_score_history, chkpt_dir, e, start_from_ep):
@@ -97,7 +98,7 @@ def create_subfolder(models_dir, addon=""):
     sleep(random.random()) # so that the parallel executions dont save into the same folder
     models_dir = os.path.join(models_dir, addon)
     os.makedirs(models_dir)
-    print(f"This runtime saved in {models_dir}")
+    print_notification_style(f"This runtime saved in {models_dir}")
     return models_dir
 
 def print_chapter_style(text):

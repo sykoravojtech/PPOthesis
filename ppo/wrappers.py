@@ -3,7 +3,9 @@ import gym
 import numpy as np
 import sys, os
 from utils import *
-from random import randint
+from random import randint, uniform
+
+np.set_printoptions(precision=3) # number of decimal places numpy prints
 
 PLUSMINUS = "\u00B1"
 
@@ -25,6 +27,7 @@ class ClippedAction(ActionWrapper):
 
         return (action-l)/(h-l)*(H-L)+L
     
+# TODO make strength for a range
 class ContinuousLeftWind(ActionWrapper):
     def __init__(self, env:gym.Env, strength=0.4):
         super().__init__(env)
@@ -47,9 +50,9 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
         nonwind_step_range (float): how many steps will be WITHOUT wind
         wind_step_range (float): how many steps will be WITH wind
     """
-    def __init__(self, env:gym.Env, strength=0.4, nonwind_step_range = (10, 50), wind_step_range = (20,50)):
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2), nonwind_step_range = (10, 50), wind_step_range = (20,50)):
         super().__init__(env)
-        self.strength = 1 - strength # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
+        self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action. This is strength range
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
         self.nonwind_step_range = nonwind_step_range
         self.wind_step_range = wind_step_range
@@ -58,17 +61,19 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
         self.wind_step = 0
         self.max_wind = randint(*wind_step_range)
         self.max_nonwind = randint(*nonwind_step_range)
-        print_notification_style(f"LeftWind strength: {strength*100}% {nonwind_step_range=} {wind_step_range=}")
+        print_notification_style(f"LeftWind: strength_range={strength} {nonwind_step_range=} {wind_step_range=}")
 
+# TODO action is a 2d array so modified is an array, we need to work with that. With vecenv
     def action(self, action):
         self.curr_step += 1
         if self.wind: # apply wind
             self.wind_step += 1
             
             new_action = np.copy(action)
-            modified = new_action[self.index] * self.strength
+            curr_strength = uniform(*self.strength)
+            modified = new_action[self.index] * curr_strength
             new_action[self.index] = modified if modified >= 0 else 0
-            print(f"GustyLeftWind({self.curr_step},{self.wind_step}):wind\n\t{action}\n\t{new_action}")
+            # print(f"GustyLeftWind({self.curr_step},{self.wind_step}):wind strength={curr_strength:.2f}\n\t{action}\n\t{new_action}")
             
             if self.wind_step >= self.max_wind:
                 self.wind = False
@@ -77,7 +82,7 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
             return new_action
         else: # nonwind
             self.wind_step += 1
-            print(f"GustyLeftWind({self.curr_step},{self.wind_step}):NONwind {action}")
+            # print(f"GustyLeftWind({self.curr_step},{self.wind_step}):NONwind {action}")
             
             if self.wind_step >= self.max_nonwind:
                 self.wind = True

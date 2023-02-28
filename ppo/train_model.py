@@ -8,7 +8,7 @@ import tensorflow as tf
 
 # My Libraries
 from PPO import PPO
-from wrappers import NormalizeObservation, ClippedAction
+from wrappers import *
 from my_parser import create_parser, save_args
 from utils import *
 
@@ -64,6 +64,9 @@ if __name__ == '__main__':
 
     env = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
                           wrappers=[NormalizeObservation, ClippedAction])
+    
+    # env = GustyLeftWind(env)
+    env = ContinuousLeftWind(env, 0.15)
     
     print_info(env, args)
     
