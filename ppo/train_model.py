@@ -65,8 +65,7 @@ if __name__ == '__main__':
     env = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
                           wrappers=[NormalizeObservation, ClippedAction])
     
-    # env = GustyLeftWind(env)
-    env = ContinuousLeftWind(env)
+    env = add_wind_wrapper(args.wind_wrapper, env)
     
     print_info(env, args)
     

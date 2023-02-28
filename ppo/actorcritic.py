@@ -1,6 +1,8 @@
 from keras.layers import Dense, Conv2D, Flatten, Input, Lambda
 from keras.models import Model
 
+# TODO make it into 2 functions, first for cnn model and second for actorcritic
+
 def get_ActorCritic_model(input_shape, action_space) -> Model:
     input = Input(shape=input_shape, name='input_cnn')
     cnn1 = Conv2D(filters=32, kernel_size=8, strides=4, activation='relu', name='conv2D_1')(input)
