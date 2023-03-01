@@ -9,7 +9,28 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 import numpy as np
 
+# ------- ADJUSTABLES -------
+input_paths = ["/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-24_17-00-49.433548/events.out.tfevents.1677254450.g04.1551953.0.v2",
+               "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-24_17-23-48.526468/events.out.tfevents.1677255829.g01.2154405.0.v2",
+               "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-27_22-24-03.054114/events.out.tfevents.1677533043.g04.1583837.0.v2",
+               "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-27_22-24-03.094545/events.out.tfevents.1677533043.g12.1928932.0.v2",
+            #    "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.481500/events.out.tfevents.1677604878.a01.1440399.0.v2",
+            #    "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.713632/events.out.tfevents.1677604879.a01.1440398.0.v2",
+               ]
+labels = ["a", "b", "c", "d", "e", "f"]
+colors = ['#023eff', '#ff7c00', '#1ac938', '#e8000b', '#8b2be2', '#9f4800', '#f14cc1', '#a3a3a3', '#ffc400', '#00d7ff']
+end = 300
+legend_curve_label = "PureEnv"
+xlabel = 'steps'
+ylabel = 'Average Score'
+save_file = "plot.png"
+# ---------------------------
 plt.style.use('seaborn-v0_8')
+""" seaborn colors https://seaborn.pydata.org/tutorial/color_palettes.html
+STYLE = "bright"
+print(sns.color_palette(STYLE).as_hex())
+sns.color_palette(STYLE).as_hex()
+"""
 
 CB91_Purple = '#9D2EC5'
 CB91_Blue = '#2CBDFE'
@@ -19,37 +40,83 @@ CB91_Violet = '#661D98'
 CB91_Amber = '#F5B14C'
 color_list = [CB91_Purple, CB91_Blue, CB91_Pink, CB91_Green, CB91_Amber, CB91_Violet]
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=color_list)
+#  --------------------------
 
-# Load Tensorboard data
-path = "./data.v2"
-data = tf.compat.v1.train.summary_iterator(path)
-# Extract values
-steps = []
-values = []
+def get_data_from_tbfile(file):
+    # Load Tensorboard data
+    data = tf.compat.v1.train.summary_iterator(file)
 
-for e in data:
-    for v in e.summary.value:
-        if v.tag == 'average score':
-            # print(tf.make_ndarray(v.tensor))
-            steps.append(e.step)
-            values.append(float(tf.make_ndarray(v.tensor)))
-            # print(f"{e=}\n{e.step=}\n{e.summary.value=}")
-            # exit()
+    # extract out of the tensorboard file only what we want
+    steps = []
+    values = []
+    for e in data:
+        for v in e.summary.value:
+            if v.tag == 'average score':
+                # print(tf.make_ndarray(v.tensor))
+                steps.append(e.step)
+                values.append(float(tf.make_ndarray(v.tensor)))
+                # print(f"{e=}\n{e.step=}\n{e.summary.value=}")
+                # exit()
 
-error = np.random.normal(1, 20, size=len(values))
-print(f"{steps=}\n\n{values=}\n\n{error=}")
+    # print(f"{steps=}\n\n{values=}\n\n{error=}")
+    # print(f"{len(steps)=}")
+    return steps, values
 
-# Plot values
-plt.plot(steps, values)
+def make_one_graph(tb_input, ax, output_file = None):
+    steps, values = get_data_from_tbfile(tb_input)
 
-# https://stackoverflow.com/questions/12957582/plot-yerr-xerr-as-shaded-region-rather-than-error-bars
-plt.fill_between(steps, values-error, values+error)
+    # Plot values
+    ax.plot(steps[:end], values[:end], label=legend_curve_label)
 
-plt.title('My title')
-plt.xlabel('steps')
-plt.ylabel('Average Score')
+    # https://stackoverflow.com/questions/12957582/plot-yerr-xerr-as-shaded-region-rather-than-error-bars
+    # error = np.random.normal(1, 20, size=len(values))
+    # ax.fill_between(steps, values-error, values+error)
 
-# plt.show()
-plt.savefig("plot2.png")
+    # ax.title('My title')
+    ax.xlabel(xlabel, fontweight="bold")
+    ax.ylabel(ylabel, fontweight="bold")
+    legend_properties = {'weight':'bold'}
+    ax.legend(loc = "best", prop = legend_properties)
 
+    # ax.show()
+    if output_file is not None:
+        ax.savefig(output_file)
+        print(f"Saving {output_file}")
+    return fig
 
+# def make_all_graphs(input_paths):
+#     figs = []
+#     for path in input_paths:
+#         save_file_name = os.path.basename(os.path.dirname(path)) # get the name of the last directory
+#         figs.append(make_one_graph(path, f"{save_file_name}.png"))
+#     return figs
+
+def figs_in_line(input_paths, labels, colors):
+    fig, axs = plt.subplots(ncols=len(input_paths), nrows=1)
+
+    for i, path in enumerate(input_paths):
+        s, v = get_data_from_tbfile(path)
+        s = np.array(s) / 1000
+        axs[i].plot(s[:300], v[:300], label = labels[i], color = colors[i])
+        axs[i].set_title(f"{colors[i]}")
+        # axs[i].ticklabel_format(useMathText=True, style='sci', axis='x', scilimits=(1,4))
+        
+    fig.supxlabel('steps ($10^3$)')
+    fig.supylabel('average score')
+    
+    return fig, axs
+    
+
+if __name__ == '__main__':
+    fig, axs = figs_in_line(input_paths, labels, colors)
+    
+    # make_one_graph(input_paths[0], axs[0], output_file = None)
+    
+    # plt.tight_layout()
+    fig.legend()
+    fig.savefig("a.png")
+    
+    
+"""
+https://stackoverflow.com/questions/42656139/set-scientific-notation-with-fixed-exponent-and-significant-digits-for-multiple
+"""
