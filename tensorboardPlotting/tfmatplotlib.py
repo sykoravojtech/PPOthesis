@@ -112,8 +112,8 @@ if __name__ == '__main__':
     
     # make_one_graph(input_paths[0], axs[0], output_file = None)
     
-    # plt.tight_layout()
-    fig.legend()
+    plt.tight_layout()
+    fig.legend(loc="center right")
     fig.savefig("a.png")
     
     
