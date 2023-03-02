@@ -28,7 +28,7 @@ class PPO:
         self.vf_coeff : float = value_fun_coeff
 
         if len(observation_space.shape) == 4:
-            print_notification_style("Building CNN ActorCritic Model")
+            # print_notification_style("Building CNN ActorCritic Model")
             # passing just the pure one observation shape
             self.model = get_ActorCritic_model(
                 observation_space.shape[1:], action_space)

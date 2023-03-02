@@ -14,15 +14,26 @@ from utils import *
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
-
-MODEL_PATH = "BEST/projectBEST"
-RUN_FOR = 3
+PATHS_INDEX = 0
+PATHS = [
+    'BEST/pureEnv/projectBEST',
+    'BEST/left/ep810_0.1,0.2(358)',
+    'BEST/gustyLeft/ep960_0.1,0.2(500)',
+    'BEST/right/ep1220_0.1,0.2(435)',
+    'BEST/gustyRight/ep780_0.1,0.2(275)',
+    'BEST/sides/ep820_0.3,0.4',
+    'BEST/sides/ep400_0.4,0.5',
+    'BEST/sides/ep400_0.1,0.2',
+    'BEST/sides/ep420_0.2,0.3'
+    ]
+MODEL_PATH = "BEST/pureEnv/projectBEST"
+RUN_FOR = 10
 
 if __name__ == '__main__':
     # show_terminal_colors()
     
-    print_tensorflow_version()
-    print_available_devices()
+    # print_tensorflow_version()
+    # print_available_devices()
         
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
     
@@ -40,11 +51,15 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    single_env = add_wind_wrapper(args.wind_wrapper, single_env)
+    if args.wind_strength is not None:
+        params = dict(strength = args.wind_strength)
+        single_env = add_wind_wrapper(args.wind_wrapper, single_env, params)
+    else:
+        single_env = add_wind_wrapper(args.wind_wrapper, single_env)
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
-    print_info(single_env, args)
+    # print_info(single_env, args)
     
     # state, _ = env.reset()
     # print(f"{state[0].shape=} {state[0][50]=}")
@@ -59,7 +74,7 @@ if __name__ == '__main__':
               value_fun_coeff = args.vf_coeff)
 
     print_notification_style(f"Loading weights from '{MODEL_PATH}'")
-    ppo.load_weights(MODEL_PATH) 
+    ppo.load_weights(PATHS[PATHS_INDEX])
     
     ppo.run(
         env,

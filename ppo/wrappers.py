@@ -251,6 +251,8 @@ def add_wind_wrapper(name, env, params = {}):
             # env = GustySidesWind(env, **params)
         else:
             print(f"{bcolors.RED} ** Wrapper name not found: '{name}' ** {bcolors.ENDC}")
+    else:
+        print_notification_style("Running pureEnv")
     return env
 
 ############### OBSERVATION WRAPPERS ################
