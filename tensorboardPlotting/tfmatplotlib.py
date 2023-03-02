@@ -116,11 +116,12 @@ def figs_in_line(input_paths, labels, colors):
     return fig, axs
 
 STEPS_POWER = 6 # xlabel 10^power and also xaxis / 10^power
+STEP_CUTOFF = 700
 def more_lines_in_one_graph(input_paths, ax, colors, title, labels = None):
     for i, path in enumerate(input_paths):
         s, v = get_data_from_tbfile(path)
         s = np.array(s) / math.pow(10, STEPS_POWER)
-        ax.plot(s[:450], v[:450], label = get_name_of_last_dir(path), color = colors[i])
+        ax.plot(s[:STEP_CUTOFF], v[:STEP_CUTOFF], label = get_name_of_last_dir(path), color = colors[i])
     ax.set_title(title)
     ax.legend()
 
@@ -144,7 +145,40 @@ def get_right(ax, colors):
         "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
-    more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from the right")
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Right wind")
+    
+def get_gustyRight(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.1, 0.2]/events.out.tfevents.1677749527.a10.1202568.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.2, 0.3]/events.out.tfevents.1677749528.a10.1202569.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.3, 0.4]/events.out.tfevents.1677749528.a11.2518530.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.4, 0.5]/events.out.tfevents.1677749528.a11.2518531.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Right wind")
+    
+def get_left(ax, colors):
+    input_paths = [
+        "",
+        "",
+        "",
+        "",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Left wind")
+    
+def get_gustyLeft(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.1, 0.2]/events.out.tfevents.1677749452.a10.1201906.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.2, 0.3]/events.out.tfevents.1677749452.a10.1201907.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.3, 0.4]/events.out.tfevents.1677749451.a11.2517891.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.4, 0.5]/events.out.tfevents.1677749452.a11.2517892.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Left wind")
 
 if __name__ == '__main__':
     # fig, axs = figs_in_line(input_paths, labels, colors)
@@ -154,14 +188,17 @@ if __name__ == '__main__':
     
     # make_one_graph(input_paths[0], axs[0], output_file = None)
     
-    fig, axs = plt.subplots(ncols=2, nrows=1)
+    fig, axs = plt.subplots(ncols=1, nrows=1)
     
-    get_sides(axs[0], colors)
-    get_right(axs[1], colors)
+    # get_sides(axs[0], colors)
+    # get_right(axs, colors)
+    # get_gustyRight(axs, colors)
+    # get_left(axs, colors)
+    # get_gustyLeft(axs, colors)
     
     fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
     fig.supylabel('average score')
-    fig.savefig("sides.png")
+    fig.savefig("gustyLeft.png")
     
     
 
