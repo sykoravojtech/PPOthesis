@@ -369,3 +369,18 @@ class EvaluationEnv(gym.Wrapper):
                 sys.exit(0)
 
         return observation, reward, terminated, truncated, info
+    
+    def get_mean_return(self):
+        return np.mean(self._episode_returns[-self._evaluate_for:])
+    
+    def get_std(self):
+        return np.std(self._episode_returns[-self._evaluate_for:])
+    
+    def get_mean_std(self, verbose = False):
+        if verbose:
+            print(f"{bcolors.GREEN}Episode {self.episode}, mean {self._evaluate_for}-episode return "
+                    f"{np.mean(self._episode_returns[-self._evaluate_for:]):.2f} "
+                    f"{PLUSMINUS} {np.std(self._episode_returns[-self._evaluate_for:]):.2f}"
+                    f"{'' if not self._report_verbose else ', returns ' + ' '.join(map('{:g}'.format, self._episode_returns[-self._report_each:]))}{bcolors.ENDC}",
+                    file=sys.stderr, flush=True)
+        return self.get_mean_return(), self.get_std()

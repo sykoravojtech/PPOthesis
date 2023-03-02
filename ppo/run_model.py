@@ -27,7 +27,7 @@ PATHS = [
     'BEST/sides/ep420_0.2,0.3'
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
-RUN_FOR = 10
+RUN_FOR = 3
 
 if __name__ == '__main__':
     # show_terminal_colors()
@@ -83,3 +83,5 @@ if __name__ == '__main__':
         render = args.render,
         record = args.record
         )
+
+    print(single_env.get_mean_std(verbose=True))

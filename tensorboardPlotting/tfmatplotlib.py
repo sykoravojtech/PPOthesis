@@ -116,15 +116,15 @@ def figs_in_line(input_paths, labels, colors):
     return fig, axs
 
 STEPS_POWER = 6 # xlabel 10^power and also xaxis / 10^power
-def more_lines_in_one_graph(input_paths, ax, colors, labels = None):
+def more_lines_in_one_graph(input_paths, ax, colors, title, labels = None):
     for i, path in enumerate(input_paths):
         s, v = get_data_from_tbfile(path)
         s = np.array(s) / math.pow(10, STEPS_POWER)
         ax.plot(s[:450], v[:450], label = get_name_of_last_dir(path), color = colors[i])
-    ax.set_title(f"Continuous wind from both sides")
+    ax.set_title(title)
     ax.legend()
 
-def get_sides(colors):
+def get_sides(ax, colors):
     input_paths = [
         "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.1, 0.2]/events.out.tfevents.1677708004.a14.510925.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.2, 0.3]/events.out.tfevents.1677708004.a14.510926.0.v2",
@@ -133,15 +133,18 @@ def get_sides(colors):
         "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
-    fig, axs = plt.subplots(ncols=1, nrows=1)
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from both sides")
+
+def get_right(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.1, 0.2]/events.out.tfevents.1677749546.a10.1203167.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.2, 0.3]/events.out.tfevents.1677749546.a10.1203168.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.3, 0.4]/events.out.tfevents.1677749546.a11.2519113.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.4, 0.5]/events.out.tfevents.1677749547.a11.2519114.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
     
-    more_lines_in_one_graph(input_paths, axs, colors)
-    
-    fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
-    fig.supylabel('average score')
-    fig.savefig("sides.png")
-    
-    return fig, axs
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from the right")
 
 if __name__ == '__main__':
     # fig, axs = figs_in_line(input_paths, labels, colors)
@@ -151,7 +154,14 @@ if __name__ == '__main__':
     
     # make_one_graph(input_paths[0], axs[0], output_file = None)
     
-    fig, axs = get_sides(colors)
+    fig, axs = plt.subplots(ncols=2, nrows=1)
+    
+    get_sides(axs[0], colors)
+    get_right(axs[1], colors)
+    
+    fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
+    fig.supylabel('average score')
+    fig.savefig("sides.png")
     
     
 

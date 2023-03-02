@@ -269,7 +269,6 @@ class PPO:
             input("==> Press ENTER to begin running")
         
         print_chapter_style(f"Running for {num_of_episodes} episodes")
-        # print(f" ^ ^ ^ Running for {num_of_episodes} episodes ^ ^ ^ ")
         
         for ep in range(1, num_of_episodes + 1):
             done = False

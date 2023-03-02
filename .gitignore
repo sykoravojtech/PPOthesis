@@ -86,6 +86,8 @@ ppo/gustyRight
 ppo/right
 ppo/gustySides
 ppo/sides
+ppo/left1
+ppo/left2
 
 # Slurm files
 slurm/
