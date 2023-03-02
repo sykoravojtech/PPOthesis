@@ -19,8 +19,8 @@ def main(env, args: argparse.Namespace) -> None:
     tf.config.threading.set_intra_op_parallelism_threads(args.threads)
     
     # create a specific folder for this training (usefull for parallel execution)
-    args.models_dir = create_dir_for_curr_runtime(args.models_dir)
-    # args.models_dir = create_subfolder(args.models_dir, f"lr_{args.learning_rate}")
+    # args.models_dir = create_dir_for_curr_runtime(args.models_dir)
+    args.models_dir = create_subfolder(args.models_dir, f"strength_{args.wind_strength}")
 
     ppo = PPO(observation_space = env.observation_space, 
               action_space = env.action_space, 
@@ -65,7 +65,8 @@ if __name__ == '__main__':
     env = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
                           wrappers=[NormalizeObservation, ClippedAction])
     
-    env = add_wind_wrapper(args.wind_wrapper, env)
+    params = dict(strength = args.wind_strength)
+    env = add_wind_wrapper(args.wind_wrapper, env, params)
     
     print_info(env, args)
     
