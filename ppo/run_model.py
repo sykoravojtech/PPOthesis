@@ -14,7 +14,7 @@ from utils import *
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
-PATHS_INDEX = 0
+PATHS_INDEX = 1
 PATHS = [
     'BEST/pureEnv/projectBEST',
     'BEST/left/ep810_0.1,0.2(358)',
@@ -27,7 +27,7 @@ PATHS = [
     'BEST/sides/ep420_0.2,0.3'
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
-RUN_FOR = 3
+RUN_FOR = 10
 
 if __name__ == '__main__':
     # show_terminal_colors()
@@ -79,8 +79,7 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    print_notification_style(f"Loading weights from '{MODEL_PATH}'")
-    ppo.load_weights(PATHS[PATHS_INDEX])
+    ppo.load_weights(PATHS[PATHS_INDEX], verbose = True)
     
     ppo.run(
         env,
