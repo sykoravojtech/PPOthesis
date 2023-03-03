@@ -14,7 +14,7 @@ from utils import *
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
-PATHS_INDEX = 1
+PATHS_INDEX = 0
 PATHS = [
     'BEST/pureEnv/projectBEST',
     'BEST/left/ep810_0.1,0.2(358)',
@@ -27,30 +27,24 @@ PATHS = [
     'BEST/sides/ep420_0.2,0.3'
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
-RUN_FOR = 10
+RUN_FOR = 2
 
-if __name__ == '__main__':
-    # show_terminal_colors()
+def make_single_env(args):
+    if args.render:
+        env = gym.make(args.env, render_mode="human", continuous = True)
+    else:
+        env = gym.make(args.env, render_mode='rgb_array', continuous = True)
     
-    # print_tensorflow_version()
-    # print_available_devices()
+    # print(env.action_space)
         
-    args = create_parser().parse_args([] if "__file__" not in globals() else None)
-    
-    def make_env():
-        if args.render:
-            env = gym.make(args.env, render_mode="human", continuous = True)
-        else:
-            env = gym.make(args.env, render_mode='rgb_array', continuous = True)
-        
-        # print(env.action_space)
-            
-        env = NormalizeObservation(env)
-        env = ClippedAction(env, low=0, high=1)
-        env = EvaluationEnv(env, render_each=args.render_each, evaluate_for=args.evaluate_for, report_each=args.report_each)
-        return env
+    env = NormalizeObservation(env)
+    env = ClippedAction(env, low=0, high=1)
+    env = EvaluationEnv(env, render_each=args.render_each, evaluate_for=args.evaluate_for, report_each=args.report_each)
+    return env
 
-    single_env = make_env()
+def make_env(args):
+    single_env = make_single_env(args)
+    
     if args.wind_strength != None or args.wind_range != None or args.nowind_range != None:
         params = {}
         if args.wind_strength is not None:
@@ -65,12 +59,17 @@ if __name__ == '__main__':
     
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
+    return single_env, env
+    
+def run_single_model(args, load_path):
+    
+    single_env, env = make_env(args)
+    
     # print_info(single_env, args)
     
     # state, _ = env.reset()
     # print(f"{state[0].shape=} {state[0][50]=}")
     
-    # exit()
     ppo = PPO(observation_space = env.observation_space, 
               action_space = env.action_space, 
               entropy_coeff = args.entropy_coeff,
@@ -79,7 +78,7 @@ if __name__ == '__main__':
               learning_rate = args.learning_rate,
               value_fun_coeff = args.vf_coeff)
 
-    ppo.load_weights(PATHS[PATHS_INDEX], verbose = True)
+    ppo.load_weights(load_path, verbose = True)
     
     ppo.run(
         env,
@@ -89,4 +88,26 @@ if __name__ == '__main__':
         record = args.record
         )
 
-    print(single_env.get_mean_std(verbose=True))
+    # print(single_env.get_mean_std(verbose=True))
+    print()
+    
+    
+def run_multiple_models(args, models_paths):
+    for path in models_paths:
+        run_single_model(args, path) # PATHS[PATHS_INDEX]
+
+if __name__ == '__main__':
+    # show_terminal_colors()
+    
+    # print_tensorflow_version()
+    # print_available_devices()
+        
+    args = create_parser().parse_args([] if "__file__" not in globals() else None)
+    
+    # run_single_model(args, PATHS[PATHS_INDEX])
+    
+    run_multiple_models(args, PATHS)
+    
+    
+
+    

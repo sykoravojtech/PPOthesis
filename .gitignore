@@ -88,9 +88,10 @@ ppo/gustySides
 ppo/sides
 ppo/left1
 ppo/left2
-ppo/archive
 ppo/MODELS
 ppo/PRETgustySides
+
+# ppo/archive
 
 # Slurm files
 slurm/
