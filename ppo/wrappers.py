@@ -185,7 +185,7 @@ class ContinuousSidesWind(ActionWrapper):
         self.direction = choice([LEFT, RIGHT])
         self.block_range = block_range
         self.verbose = verbose
-        print_notification_style(f"ContinuousSidesWind:\n\t{strength=} starting={self.direction} {block_range=}")
+        print_notification_style(f"ContinuousSidesWind:\n\tstarting = {'RIGHT' if self.direction == RIGHT else 'LEFT'}\n\t{strength=}\n\t{block_range=}")
 
     def action(self, action):
         new_action = np.copy(action)
@@ -224,6 +224,68 @@ class ContinuousSidesWind(ActionWrapper):
         if self.verbose: print(f"ContinuousSidesWind({self.wind_step}/{self.max_wind}):dir={'RIGHT' if self.direction == RIGHT else 'LEFT'} {curr_strength=:.3f}\n\t{action}\n\t{new_action}")
         return new_action
 
+class GustySidesWind(ActionWrapper):
+    
+    def __init__(self, env:gym.Env, strength=(0.1, 0.2), nonwind_step_range = (10, 30), wind_step_range = (50,100), verbose=False):
+        super().__init__(env)
+        self.left_strength = (1-strength[0], 1-strength[1])
+        self.right_strength = (1+strength[0], 1+strength[1])
+        self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
+        self.wind_step = 0
+        self.max_wind = randint(*wind_step_range)
+        self.max_nonwind = randint(*nonwind_step_range)
+        self.parallel = len(env.action_space.shape) == 2
+        self.direction = choice([LEFT, RIGHT])
+        self.nonwind_step_range = nonwind_step_range
+        self.wind_step_range = wind_step_range
+        self.verbose = verbose
+        self.wind = False
+        print_notification_style(f"GustySidesWind:\n\tstart = {'RIGHT' if self.direction == RIGHT else 'LEFT'}\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
+
+    def action(self, action):        
+        if self.wind: # apply wind
+            self.wind_step += 1
+            new_action = np.copy(action)
+            
+            if self.direction == RIGHT:
+                curr_strength = uniform(*self.right_strength)
+                
+                if self.parallel: # vecenv, parallel environments
+                    new_action[:, self.index] *= curr_strength
+                    new_action[:, self.index][new_action[:, self.index] > 1.] = 1.
+                else:
+                    new_action[self.index] *= curr_strength
+                    new_action[self.index] = new_action[self.index] if new_action[self.index] <= 1 else 1
+                
+            else: # LEFT
+                curr_strength = uniform(*self.left_strength)
+                
+                if self.parallel: # vecenv, parallel environments
+                    new_action[:, self.index] *= curr_strength
+                else:
+                    new_action[self.index] *= curr_strength
+            
+            # wind block ending condition
+            if self.wind_step >= self.max_wind:
+                self.wind_step = 0
+                self.wind = False
+                self.max_nonwind = randint(*self.nonwind_step_range)
+                
+            if self.verbose: print(f"GustySidesWind({self.wind_step}/{self.max_wind}):wind dir={'RIGHT' if self.direction == RIGHT else 'LEFT'} {curr_strength=:.3f}\n\t{action}\n\t{new_action}")
+            
+            return new_action
+        
+        else: # nonwind
+            self.wind_step += 1
+            if self.verbose: print(f"GustySidesWind({self.wind_step}/{self.max_nonwind}):NONwind {action}")
+            
+            if self.wind_step >= self.max_nonwind:
+                self.wind_step = 0
+                self.wind = True
+                self.direction = choice([LEFT, RIGHT])
+                self.max_wind = randint(*self.wind_step_range)
+            return action
+            
 class PrintAction(ActionWrapper):
     def __init__(self, env:gym.Env):
         super().__init__(env)
@@ -247,8 +309,8 @@ def add_wind_wrapper(name, env, params = {}):
             env = GustyRightWind(env, **params)
         elif name == "sides":
             env = ContinuousSidesWind(env, **params)
-        # elif name == "gustysides":
-            # env = GustySidesWind(env, **params)
+        elif name == "gustysides":
+            env = GustySidesWind(env, **params)
         else:
             print(f"{bcolors.RED} ** Wrapper name not found: '{name}' ** {bcolors.ENDC}")
     else:

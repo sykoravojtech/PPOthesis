@@ -39,7 +39,8 @@ class PPO:
     def save_weights(self, filename='model'):
         self.model.save_weights(filename, save_format="h5")
 
-    def load_weights(self, filename='model'):
+    def load_weights(self, filename='model', verbose = False):
+        if verbose: print_notification_style(f"Loading weights from {filename}")
         self.model.load_weights(filename)
         
     def get_model(self):

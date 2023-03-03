@@ -20,7 +20,7 @@ def main(env, args: argparse.Namespace) -> None:
     
     # create a specific folder for this training (usefull for parallel execution)
     # args.models_dir = create_dir_for_curr_runtime(args.models_dir)
-    args.models_dir = create_subfolder(args.models_dir, f"s_{args.wind_strength}-w{args.wind_range}")
+    args.models_dir = create_subfolder(args.models_dir, f"strength_{args.wind_strength}")
 
     ppo = PPO(observation_space = env.observation_space, 
               action_space = env.action_space, 
@@ -31,7 +31,7 @@ def main(env, args: argparse.Namespace) -> None:
               value_fun_coeff = args.vf_coeff)
     
     if args.load_model != "":
-        ppo.load_weights(args.load_model)
+        ppo.load_weights(args.load_model, verbose = True)
     
     def lr_schedule(x): return x * args.learning_rate
     
