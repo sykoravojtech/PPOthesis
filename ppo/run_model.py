@@ -95,6 +95,12 @@ def run_single_model(args, load_path):
 def run_multiple_models(args, models_paths):
     for path in models_paths:
         run_single_model(args, path) # PATHS[PATHS_INDEX]
+        
+def run_following_models(args, epizodes, base_dir):
+    for ep in epizodes:
+        path = os.path.join(base_dir, f"ep{ep}", f"ep{ep}_weights")
+        # print(path)
+        run_single_model(args, path) # PATHS[PATHS_INDEX]
 
 if __name__ == '__main__':
     # show_terminal_colors()
@@ -106,7 +112,13 @@ if __name__ == '__main__':
     
     # run_single_model(args, PATHS[PATHS_INDEX])
     
-    run_multiple_models(args, PATHS)
+    # run_multiple_models(args, PATHS)
+    
+    eps = list(range(80,121,10))
+    run_following_models(args, eps, "archive/left/3to4")
+    
+    # run_single_model(args, "archive/left/3to4/ep80/ep80_weights")
+    
     
     
 
