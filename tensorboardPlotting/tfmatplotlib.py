@@ -160,10 +160,10 @@ def get_gustyRight(ax, colors):
     
 def get_left(ax, colors):
     input_paths = [
-        "",
-        "",
-        "",
-        "",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.1, 0.2]/events.out.tfevents.1677749342.a10.1201228.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.2, 0.3]/events.out.tfevents.1677790045.a10.1229252.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.3, 0.4]/events.out.tfevents.1677749342.a11.2517219.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.4, 0.5]/events.out.tfevents.1677749342.a11.2517220.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
@@ -193,12 +193,12 @@ if __name__ == '__main__':
     # get_sides(axs[0], colors)
     # get_right(axs, colors)
     # get_gustyRight(axs, colors)
-    # get_left(axs, colors)
+    get_left(axs, colors)
     # get_gustyLeft(axs, colors)
     
     fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
     fig.supylabel('average score')
-    fig.savefig("gustyLeft.png")
+    fig.savefig("left.png")
     
     
 

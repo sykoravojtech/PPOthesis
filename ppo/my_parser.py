@@ -32,6 +32,8 @@ def create_parser():
     parser.add_argument("--render_each", default=0, type=int, help="Render each nth episode as human viewable")
     parser.add_argument("-wind", "-wrapper", "--wind_wrapper", default=None, help = "which wind wrapper to use")
     parser.add_argument("--wind_strength", default=None, type=float, nargs='+', help="wind strength")
+    parser.add_argument("--nowind_range", default=None, type=int, nargs='+', help="range for wrapper")
+    parser.add_argument("--wind_range", default=None, type=int, nargs='+', help="range for wrapper")
 
     # parser.add_argument("--learn_every", default=20, type=int, help="N")
     # parser.add_argument("-e", "--epsilon", default=0.3, type=float, help="Exploration factor.")

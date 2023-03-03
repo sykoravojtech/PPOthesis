@@ -51,8 +51,14 @@ if __name__ == '__main__':
         return env
 
     single_env = make_env()
-    if args.wind_strength is not None:
-        params = dict(strength = args.wind_strength)
+    if args.wind_strength != None or args.wind_range != None or args.nowind_range != None:
+        params = {}
+        if args.wind_strength is not None:
+            params["strength"] = args.wind_strength
+        if args.wind_range is not None:
+            params["wind_step_range"] = args.wind_range
+        if args.nowind_range is not None:
+            params["nonwind_step_range"] = args.nowind_range
         single_env = add_wind_wrapper(args.wind_wrapper, single_env, params)
     else:
         single_env = add_wind_wrapper(args.wind_wrapper, single_env)

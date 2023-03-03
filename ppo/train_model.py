@@ -20,7 +20,7 @@ def main(env, args: argparse.Namespace) -> None:
     
     # create a specific folder for this training (usefull for parallel execution)
     # args.models_dir = create_dir_for_curr_runtime(args.models_dir)
-    args.models_dir = create_subfolder(args.models_dir, f"strength_{args.wind_strength}")
+    args.models_dir = create_subfolder(args.models_dir, f"s_{args.wind_strength}-w{args.wind_range}")
 
     ppo = PPO(observation_space = env.observation_space, 
               action_space = env.action_space, 
@@ -65,8 +65,17 @@ if __name__ == '__main__':
     env = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
                           wrappers=[NormalizeObservation, ClippedAction])
     
-    params = dict(strength = args.wind_strength)
-    env = add_wind_wrapper(args.wind_wrapper, env, params)
+    if args.wind_strength != None or args.wind_range != None or args.nowind_range != None:
+        params = {}
+        if args.wind_strength is not None:
+            params["strength"] = args.wind_strength
+        if args.wind_range is not None:
+            params["wind_step_range"] = args.wind_range
+        if args.nowind_range is not None:
+            params["nonwind_step_range"] = args.nowind_range
+        env = add_wind_wrapper(args.wind_wrapper, env, params)
+    else:
+        env = add_wind_wrapper(args.wind_wrapper, env)
     
     print_info(env, args)
     
