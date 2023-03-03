@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: PPO Car Racing with Wind
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Vojtěch
+    family-names: Sýkora
+repository-code: 'https://github.com/sykoravojtech/PPOthesis'
+license: MIT

@@ -27,7 +27,7 @@ PATHS = [
     'BEST/sides/ep420_0.2,0.3'
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
-RUN_FOR = 2
+RUN_FOR = 1
 
 def make_single_env(args):
     if args.render:
@@ -114,8 +114,8 @@ if __name__ == '__main__':
     
     # run_multiple_models(args, PATHS)
     
-    eps = list(range(80,121,10))
-    run_following_models(args, eps, "archive/left/3to4")
+    eps = list(range(170,311,10))
+    run_following_models(args, eps, "archive/gustyLeft/3to4")
     
     # run_single_model(args, "archive/left/3to4/ep80/ep80_weights")
     
