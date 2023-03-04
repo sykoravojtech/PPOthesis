@@ -148,7 +148,7 @@ def write_to_csv(filename, rows):
         writer = csv.writer(file)
         writer.writerows(rows)
 
-def run_single_model_on_all_envs(args, load_path):
+def run_single_model_on_all_envs(args, load_path, save_csv = None):
     single_env, env = make_env(args)
     
     ppo = PPO(observation_space = env.observation_space, 
@@ -182,6 +182,9 @@ def run_single_model_on_all_envs(args, load_path):
         
         print_divider()
         print()
+        
+    if save_csv != None:
+        write_to_csv(save_csv, [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
 
     return means, stds
 
@@ -203,9 +206,7 @@ if __name__ == '__main__':
     
     # means, stds = run_multiple_models(args, PATHS)
     # names = [get_name_of_last_dir(path) for path in PATHS]
-    means, stds = run_single_model_on_all_envs(args, PATHS[0])
-    write_to_csv("pureEnv.csv", [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
-    print()
+    means, stds = run_single_model_on_all_envs(args, PATHS[0], save_csv = "pureEnv.csv")
     
     
     
