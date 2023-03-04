@@ -122,3 +122,6 @@ def print_available_devices():
 
 def get_name_of_last_dir(path):
     return os.path.basename(os.path.dirname(path)) # get the name of the last directory
+
+def round_list(lst, decimals=2):
+    return [round(x, decimals) for x in lst]

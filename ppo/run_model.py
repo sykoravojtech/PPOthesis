@@ -204,7 +204,7 @@ if __name__ == '__main__':
     # means, stds = run_multiple_models(args, PATHS)
     # names = [get_name_of_last_dir(path) for path in PATHS]
     means, stds = run_single_model_on_all_envs(args, PATHS[0])
-    write_to_csv("pureEnv.csv", [ALLENVS_NAMES, means, stds])
+    write_to_csv("pureEnv.csv", [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
     print()
     
     
