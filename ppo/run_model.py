@@ -16,19 +16,19 @@ import csv
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
 PATHS_INDEX = 0
-PATHS = [
+MODELS = [
     'BEST/pureEnv/projectBEST',
     'BEST/left/ep810_0.1,0.2(358)',
     'BEST/gustyLeft/ep960_0.1,0.2(500)',
-    # 'BEST/right/ep1220_0.1,0.2(435)',
-    # 'BEST/gustyRight/ep780_0.1,0.2(275)',
-    # 'BEST/sides/ep820_0.3,0.4',
-    # 'BEST/sides/ep400_0.4,0.5',
-    # 'BEST/sides/ep400_0.1,0.2',
-    # 'BEST/sides/ep420_0.2,0.3'
+    'BEST/right/ep1220_0.1,0.2(435)',
+    'BEST/gustyRight/ep780_0.1,0.2(275)',
+    'BEST/sides/ep820_0.3,0.4',
+    'BEST/sides/ep400_0.4,0.5',
+    'BEST/sides/ep400_0.1,0.2',
+    'BEST/sides/ep420_0.2,0.3'
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
-RUN_FOR = 1
+RUN_FOR = 50
 ALLENVS = [
     (None, None, "pureEnv"),
     ("left", [0.1, 0.2], "left1to2"),
@@ -184,10 +184,38 @@ def run_single_model_on_all_envs(args, load_path, save_csv = None):
         print()
         
     if save_csv != None:
+        print(f"{bcolors.GREEN} Saving to {save_csv}{bcolors.ENDC}")
         write_to_csv(save_csv, [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
 
     return means, stds
 
+def run_multiple_models_on_all_envs(args, model_paths, save_csv = None, csv_style = "separate"):
+    if csv_style == "separate":
+        for path in model_paths:
+            print(f"\n{bcolors.RED}{'*' * 30}{bcolors.ENDC}")
+            print_chapter_style(f"NEW MODEL: {path[5:]}")
+            if save_csv is not None:
+                run_single_model_on_all_envs(args, path, save_csv = f"{path[5:].replace('/', '-')}.csv")
+            else:
+                run_single_model_on_all_envs(args, path)
+    
+    else: # together, combined, one large table
+        table_means = [ALLENVS_NAMES]
+        table_stds = [ALLENVS_NAMES]
+        first_col = ["."]
+        
+        for path in model_paths:
+            print(f"\n{bcolors.RED}{'*' * 30}{bcolors.ENDC}")
+            print_chapter_style(f"NEW MODEL: {path[5:]}")
+            means, stds = run_single_model_on_all_envs(args, path, save_csv = None)
+            table_means.append(round_list(means, 2))
+            table_stds.append(round_list(stds, 2))
+            first_col.append(f"{path[5:]}")
+        
+        write_to_csv(f"means_{save_csv}", add_col_to_start(table_means, first_col))
+        write_to_csv(f"stds_{save_csv}", add_col_to_start(table_stds, first_col))
+ 
+    
 if __name__ == '__main__':
     # show_terminal_colors()
     
@@ -206,8 +234,10 @@ if __name__ == '__main__':
     
     # means, stds = run_multiple_models(args, PATHS)
     # names = [get_name_of_last_dir(path) for path in PATHS]
-    means, stds = run_single_model_on_all_envs(args, PATHS[0], save_csv = "pureEnv.csv")
+    # means, stds = run_single_model_on_all_envs(args, PATHS[0], save_csv = "pureEnv.csv")
     
+    # run_multiple_models_on_all_envs(args, MODELS, save_csv = True)
+    run_multiple_models_on_all_envs(args, MODELS, save_csv = "TABLE.csv", csv_style = "combined")
     
     
     

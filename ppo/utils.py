@@ -125,3 +125,14 @@ def get_name_of_last_dir(path):
 
 def round_list(lst, decimals=2):
     return [round(x, decimals) for x in lst]
+
+def add_col_to_start(rows, col):
+    assert len(rows) == len(col)
+    new_rows = [row[:] for row in rows]
+    for i in range(len(col)):
+        new_rows[i].insert(0, col[i])
+    return new_rows
+
+if __name__ == "__main__":
+    print()
+    print(add_col_to_start(rows = [[1,2,3],[4,5,6]], col = ["a", "b"]))
