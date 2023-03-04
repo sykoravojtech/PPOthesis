@@ -28,7 +28,7 @@ def create_parser():
     parser.add_argument("--record", default=False, action="store_true", help="for now renders window and waits for ENTER to start running, TODO:Record episodes.")
     parser.add_argument("--env", default="CarRacing-v2", help="Environment name")
     parser.add_argument("--report_each", default=1, type=int, help="Print each nth episode a report")
-    parser.add_argument("--evaluate_for", default=10, type=int, help="Evaluate mean score for N episodes")
+    parser.add_argument("--evaluate_for", default=50, type=int, help="Evaluate mean score for N episodes")
     parser.add_argument("--render_each", default=0, type=int, help="Render each nth episode as human viewable")
     parser.add_argument("-wind", "-wrapper", "--wind_wrapper", default=None, help = "which wind wrapper to use")
     parser.add_argument("-strength", "--wind_strength", default=None, type=float, nargs='+', help="wind strength")

@@ -15,20 +15,62 @@ import csv
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
-PATHS_INDEX = 0
-MODELS = [
-    'BEST/pureEnv/projectBEST',
-    'BEST/left/ep810_0.1,0.2(358)',
-    'BEST/gustyLeft/ep960_0.1,0.2(500)',
-    'BEST/right/ep1220_0.1,0.2(435)',
-    'BEST/gustyRight/ep780_0.1,0.2(275)',
-    'BEST/sides/ep820_0.3,0.4',
-    'BEST/sides/ep400_0.4,0.5',
-    'BEST/sides/ep400_0.1,0.2',
-    'BEST/sides/ep420_0.2,0.3'
-    ]
-MODEL_PATH = "BEST/pureEnv/projectBEST"
 RUN_FOR = 50
+
+
+PUREENV_MODEL = 'BEST/pureEnv/projectBEST'
+LEFT_MODELS = [
+    'BEST/left/ep690_1to2',
+    'BEST/left/ep580_2to3',
+    'BEST/left/ep640_3to4',
+    'BEST/left/ep560_4to5'
+]
+GUSTYLEFT_MODELS = [
+    'BEST/gustyLeft/ep530_1to2',
+    'BEST/gustyLeft/ep390_2to3',
+    'BEST/gustyLeft/ep680_3to4',
+    'BEST/gustyLeft/ep690_4to5'
+]
+RIGHT_MODELS = [
+    'BEST/right/ep680_1to2',
+    'BEST/right/ep680_2to3',
+    'BEST/right/ep670_3to4',
+    'BEST/right/ep680_4to5'
+]
+GUSTYRIGHT_MODELS = [
+    'BEST/gustyRight/ep670_1to2',
+    'BEST/gustyRight/ep650_2to3',
+    'BEST/gustyRight/ep670_3to4',
+    'BEST/gustyRight/ep670_4to5'
+]
+SIDES_MODELS = [
+    'BEST/sides/ep400_1to2',
+    'BEST/sides/ep420_2to3',
+    'BEST/sides/ep820_3to4',
+    'BEST/sides/ep400_4to5'
+]
+GUSTYSIDES_MODELS = [
+    'BEST/gustySides/ep830_1to2',
+    'BEST/gustySides/ep1240_2to3',
+    'BEST/gustySides/ep760_3to4',
+    # ''
+]
+MODELS = [
+    PUREENV_MODEL,
+    *LEFT_MODELS,
+    *GUSTYLEFT_MODELS,
+    *RIGHT_MODELS,
+    *GUSTYRIGHT_MODELS,
+    *SIDES_MODELS,
+    *GUSTYSIDES_MODELS,
+    
+    # 'BEST/left/ep810_0.1,0.2(358)',
+    # 'BEST/gustyLeft/ep960_0.1,0.2(500)',
+    # 'BEST/right/ep1220_0.1,0.2(435)',
+    # 'BEST/gustyRight/ep780_0.1,0.2(275)',
+]
+MODELS_INDEX = 0
+
 ALLENVS = [ # (wind_wrapper, strength, name_for_1st_column_of_csv)
     (None, None, "pureEnv"),
     ("left", [0.1, 0.2], "left1to2"),
@@ -146,7 +188,7 @@ def write_to_csv(filename, rows):
         writer = csv.writer(file)
         writer.writerows(rows)
 
-def run_single_model_on_all_envs(args, load_path, save_csv = None):
+def run_single_model_on_all_envs(args, load_path, save_csv = False):
     single_env, env = make_env(args)
     
     ppo = PPO(observation_space = env.observation_space, 
@@ -181,9 +223,9 @@ def run_single_model_on_all_envs(args, load_path, save_csv = None):
         print_divider()
         print()
         
-    if save_csv != None:
-        print(f"{bcolors.GREEN} Saving to {save_csv}{bcolors.ENDC}")
-        write_to_csv(save_csv, [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
+    if save_csv:
+        print(f"{bcolors.GREEN} Saving to {load_path[5:].replace('/', '-')}.csv{bcolors.ENDC}")
+        write_to_csv(f"{load_path[5:].replace('/', '-')}.csv", [ALLENVS_NAMES, round_list(means, 2), round_list(stds, 2)])
 
     return means, stds
 
@@ -193,7 +235,7 @@ def run_multiple_models_on_all_envs(args, model_paths, save_csv = None, csv_styl
             print(f"\n{bcolors.RED}{'*' * 30}{bcolors.ENDC}")
             print_chapter_style(f"NEW MODEL: {path[5:]}")
             if save_csv is not None:
-                run_single_model_on_all_envs(args, path, save_csv = f"{path[5:].replace('/', '-')}.csv")
+                run_single_model_on_all_envs(args, path, save_csv = True)
             else:
                 run_single_model_on_all_envs(args, path)
     
@@ -232,10 +274,10 @@ if __name__ == '__main__':
     
     # means, stds = run_multiple_models(args, PATHS)
     # names = [get_name_of_last_dir(path) for path in PATHS]
-    # means, stds = run_single_model_on_all_envs(args, PATHS[0], save_csv = "pureEnv.csv")
+    means, stds = run_single_model_on_all_envs(args, args.load_model, save_csv = True)
     
     # run_multiple_models_on_all_envs(args, MODELS, save_csv = True)
-    run_multiple_models_on_all_envs(args, MODELS, save_csv = "TABLE.csv", csv_style = "combined")
+    # run_multiple_models_on_all_envs(args, MODELS, save_csv = "TABLE.csv", csv_style = "combined")
     
     
     
