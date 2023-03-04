@@ -29,7 +29,7 @@ MODELS = [
     ]
 MODEL_PATH = "BEST/pureEnv/projectBEST"
 RUN_FOR = 50
-ALLENVS = [
+ALLENVS = [ # (wind_wrapper, strength, name_for_1st_column_of_csv)
     (None, None, "pureEnv"),
     ("left", [0.1, 0.2], "left1to2"),
     ("left", [0.2, 0.3], "left2to3"),
@@ -120,8 +120,7 @@ def run_single_model(args, load_path):
 
     print()
     # print(single_env.get_mean_std(verbose=True))
-    return single_env.get_mean_std()
-    
+    return single_env.get_mean_std()    
     
 def run_multiple_models(args, models_paths):
     means = []
@@ -133,8 +132,7 @@ def run_multiple_models(args, models_paths):
         stds.append(std)
         print_divider()
         
-    return means, stds
-        
+    return means, stds  
         
 # render models from one training which were after each other
 def run_following_models(args, epizodes, base_dir):

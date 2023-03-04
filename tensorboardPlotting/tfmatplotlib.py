@@ -180,7 +180,51 @@ def get_gustyLeft(ax, colors):
     
     more_lines_in_one_graph(input_paths, ax, colors, "Gusty Left wind")
 
+def make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path = "multibar.png"):
+    # set width of bar
+    barWidth = 0.15
+    fig, axs = plt.subplots()
+    
+    # set height of bar - MODELS score
+    # that are the parameters of the function
+    
+    # Set position of bar on X axis
+    br1 = np.arange(len(pureEnv))
+    br2 = [x + barWidth for x in br1]
+    br3 = [x + barWidth for x in br2]
+    br4 = [x + barWidth for x in br3]
+    br5 = [x + barWidth for x in br4]
+    
+    # Make the plot
+    plt.bar(br1, s1to2,   color = colors[0], width = barWidth, edgecolor ='grey', label = 'strength_[0.1, 0.2]')
+    plt.bar(br2, s2to3,   color = colors[1], width = barWidth, edgecolor ='grey', label = 'strength_[0.2, 0.3]')
+    plt.bar(br3, s3to4,   color = colors[2], width = barWidth, edgecolor ='grey', label = 'strength_[0.3, 0.4]')
+    plt.bar(br4, s4to5,   color = colors[3], width = barWidth, edgecolor ='grey', label = 'strength_[0.4, 0.5]')
+    plt.bar(br5, pureEnv, color = colors[4], width = barWidth, edgecolor ='grey', label = 'pureEnv')
+    
+    # Adding Xticks
+    plt.xlabel('Envs', fontweight ='bold', fontsize = 12)
+    plt.ylabel('Average score over last 50 episodes', fontweight ='bold', fontsize = 12)
+    plt.xticks([r + barWidth*2 for r in range(len(pureEnv))],
+            ['pureEnv', 'left', 'gustyleft', 'right', 'gustyRight', 'sides', 'gustySides'])
+    
+    plt.legend(bbox_to_anchor=(0.85,0.6), bbox_transform=plt.gcf().transFigure)
+    plt.subplots_adjust(left=0.1, bottom=0.1, right=0.85)
+    plt.savefig(save_path, bbox_inches="tight")
+
+def make_example_multibar(save_path = "multibar.png"):
+    s1to2   = [2,1,3,2,1,2,3]
+    s2to3   = [3,1,4,2,3,1,2]
+    s3to4   = [4,2,1,3,1,2,4]
+    s4to5   = [3,1,2,4,3,1,3] 
+    pureEnv = [1,2,3,1,2,3,1]
+    make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path)
+
 if __name__ == '__main__':
+    # ---------------------
+    # normal line/curve plots
+    # ---------------------
+    
     # fig, axs = figs_in_line(input_paths, labels, colors)
     # plt.tight_layout()
     # fig.legend(loc="center right")
@@ -188,17 +232,23 @@ if __name__ == '__main__':
     
     # make_one_graph(input_paths[0], axs[0], output_file = None)
     
-    fig, axs = plt.subplots(ncols=1, nrows=1)
     
-    # get_sides(axs[0], colors)
-    # get_right(axs, colors)
-    # get_gustyRight(axs, colors)
-    get_left(axs, colors)
-    # get_gustyLeft(axs, colors)
     
-    fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
-    fig.supylabel('average score')
-    fig.savefig("left.png")
+    # fig, axs = plt.subplots(ncols=1, nrows=1)
+    
+    # # get_sides(axs[0], colors)
+    # # get_right(axs, colors)
+    # # get_gustyRight(axs, colors)
+    # get_left(axs, colors)
+    # # get_gustyLeft(axs, colors)
+    
+    # fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
+    # fig.supylabel('average score')
+    # fig.savefig("left.png")
+    
+    # -----------------------------------
+    #   MultiBAR plots
+    make_example_multibar()
     
     
 
