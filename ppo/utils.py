@@ -109,6 +109,9 @@ def print_chapter_style(text):
 def print_notification_style(text):
     print(f">> {bcolors.CYAN}{text}{bcolors.ENDC}")
     
+def print_divider(divider_length = 30):
+    print(f"{bcolors.YELLOW}{'-' * divider_length}{bcolors.ENDC}")
+    
 def print_tensorflow_version():
     import tensorflow as tf
     print_notification_style(f"TensorFlow version = {tf.__version__}")
@@ -116,3 +119,6 @@ def print_tensorflow_version():
 def print_available_devices():
     from tensorflow.python.client import device_lib
     print_notification_style(f"Devices available: {[device.name for device in device_lib.list_local_devices() if device.name != None]}")   
+
+def get_name_of_last_dir(path):
+    return os.path.basename(os.path.dirname(path)) # get the name of the last directory
