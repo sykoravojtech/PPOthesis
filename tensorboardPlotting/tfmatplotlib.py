@@ -241,37 +241,51 @@ def make_example_multibar(save_path = "multibar.png"):
     make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path)
 
 if __name__ == '__main__':
+    
     # ---------------------
     # normal line/curve plots
     # ---------------------
-    
-    # fig, axs = figs_in_line(input_paths, labels, colors)
-    # plt.tight_layout()
-    # fig.legend(loc="center right")
-    # fig.savefig("a.png")
-    
-    # make_one_graph(input_paths[0], axs[0], output_file = None)
-    
-    
-    
-    fig, axs = plt.subplots(ncols=1, nrows=1)
-    
-    # # get_sides(axs[0], colors)
-    # # get_right(axs, colors)
-    # # get_gustyRight(axs, colors)
-    # get_left(axs, colors)
-    # # get_gustyLeft(axs, colors)
-    # get_gustySides(axs, colors)
-    get_PRETgustySides(axs, colors)
-    
-    fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
-    fig.supylabel('average score')
-    fig.savefig("PRETgustySides.png")
+    NORMAL_LINE = False
+    if NORMAL_LINE:
+        # fig, axs = figs_in_line(input_paths, labels, colors)
+        # plt.tight_layout()
+        # fig.legend(loc="center right")
+        # fig.savefig("a.png")
+        
+        # make_one_graph(input_paths[0], axs[0], output_file = None)
+        
+        
+        
+        fig, axs = plt.subplots(ncols=1, nrows=1)
+        
+        # # get_sides(axs[0], colors)
+        # # get_right(axs, colors)
+        # # get_gustyRight(axs, colors)
+        # get_left(axs, colors)
+        # # get_gustyLeft(axs, colors)
+        # get_gustySides(axs, colors)
+        get_PRETgustySides(axs, colors)
+        
+        fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
+        fig.supylabel('average score')
+        fig.savefig("PRETgustySides.png")
     
     # -----------------------------------
     #   MultiBAR plots
-    # make_example_multibar()
-    
+    MULTIBAR = False
+    if MULTIBAR:
+        make_example_multibar()
+        
+    # -----------------------------------
+    #   HeatMap plots
+    HEATMAP = True
+    if HEATMAP:
+        # data = np.genfromtxt("running-heatmap.csv", delimiter=",", skip_header=True, usecols=range(1, 25))
+        # plt.imshow(data, cmap='hot', interpolation='nearest')
+        # plt.savefig("heatmap.png")
+        
+        import pandas as pd
+        
     
 
     
