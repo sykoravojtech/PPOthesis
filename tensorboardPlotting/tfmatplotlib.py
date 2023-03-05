@@ -147,6 +147,15 @@ def get_gustySides(ax, colors):
     
     more_lines_in_one_graph(input_paths, ax, colors, "Gusty wind form both sides")
 
+def get_PRETgustySides(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.3, 0.4]/events.out.tfevents.1677865502.a10.1276572.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959687.a11.2645933.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, [colors[0], colors[1], colors[4]], "Gusty wind form both sides - Pretrained model without wind")
+
 def get_right(ax, colors):
     input_paths = [
         "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.1, 0.2]/events.out.tfevents.1677749546.a10.1203167.0.v2",
@@ -252,11 +261,12 @@ if __name__ == '__main__':
     # # get_gustyRight(axs, colors)
     # get_left(axs, colors)
     # # get_gustyLeft(axs, colors)
-    get_gustySides(axs, colors)
+    # get_gustySides(axs, colors)
+    get_PRETgustySides(axs, colors)
     
     fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
     fig.supylabel('average score')
-    fig.savefig("gustySides.png")
+    fig.savefig("PRETgustySides.png")
     
     # -----------------------------------
     #   MultiBAR plots
