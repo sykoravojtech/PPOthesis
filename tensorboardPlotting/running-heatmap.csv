@@ -1,5 +1,4 @@
-wind,noWind,left1to2,left2to3,left3to4,left4to5,gustyLeft1to2,gustyLeft2to3,gustyLeft3to4,gustyLeft4to5,right1to2,right2to3,right3to4,right4to5,gustyRight1to2,gustyRight2to3,gustyRight3to4,gustyRight4to5,sides1to2,sides2to3,sides3to4,sides4to5,gustySides1to2,gustySides2to3,gustySides3to4,gustySides4to5
-agent,,,,,,,,,,,,,,,,,,,,,,,,,
+,noWind,left1to2,left2to3,left3to4,left4to5,gustyLeft1to2,gustyLeft2to3,gustyLeft3to4,gustyLeft4to5,right1to2,right2to3,right3to4,right4to5,gustyRight1to2,gustyRight2to3,gustyRight3to4,gustyRight4to5,sides1to2,sides2to3,sides3to4,sides4to5,gustySides1to2,gustySides2to3,gustySides3to4,gustySides4to5
 noWind,927.42,749.07,177.42,27.05,-69.08,814.50,309.88,195.72,21.76,832.91,559.17,288.93,192.33,904.97,835.50,708.04,798.52,837.61,484.54,173.20,43.02,845.50,555.03,245.53,96.79
 left1to2,829.11,893.64,655.25,-23.05,-76.19,888.21,856.42,227.14,33.99,254.06,91.28,29.28,-22.97,654.18,466.69,308.77,69.23,777.11,563.88,136.39,2.39,703.55,540.96,92.49,-16.71
 left2to3,267.71,857.69,909.09,667.97,-65.20,705.95,651.30,725.82,202.87,17.16,-14.96,-41.09,-55.72,77.10,22.30,-28.28,-1.70,275.36,104.18,18.53,48.64,398.93,497.38,360.08,-11.06
