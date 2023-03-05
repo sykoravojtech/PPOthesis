@@ -136,6 +136,17 @@ def get_sides(ax, colors):
     
     more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from both sides")
 
+def get_gustySides(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.1, 0.2]/events.out.tfevents.1677864061.a10.1274552.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.2, 0.3]/events.out.tfevents.1677864060.a10.1274553.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.3, 0.4]/events.out.tfevents.1677864061.a11.2589115.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959448.a10.1330885.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty wind form both sides")
+
 def get_right(ax, colors):
     input_paths = [
         "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.1, 0.2]/events.out.tfevents.1677749546.a10.1203167.0.v2",
@@ -234,21 +245,22 @@ if __name__ == '__main__':
     
     
     
-    # fig, axs = plt.subplots(ncols=1, nrows=1)
+    fig, axs = plt.subplots(ncols=1, nrows=1)
     
     # # get_sides(axs[0], colors)
     # # get_right(axs, colors)
     # # get_gustyRight(axs, colors)
     # get_left(axs, colors)
     # # get_gustyLeft(axs, colors)
+    get_gustySides(axs, colors)
     
-    # fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
-    # fig.supylabel('average score')
-    # fig.savefig("left.png")
+    fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
+    fig.supylabel('average score')
+    fig.savefig("gustySides.png")
     
     # -----------------------------------
     #   MultiBAR plots
-    make_example_multibar()
+    # make_example_multibar()
     
     
 
