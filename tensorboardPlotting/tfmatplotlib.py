@@ -116,7 +116,7 @@ def figs_in_line(input_paths, labels, colors):
     return fig, axs
 
 STEPS_POWER = 6 # xlabel 10^power and also xaxis / 10^power
-STEP_CUTOFF = 700
+STEP_CUTOFF = 550
 def more_lines_in_one_graph(input_paths, ax, colors, title, labels = None):
     for i, path in enumerate(input_paths):
         s, v = get_data_from_tbfile(path)
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     # ---------------------
     # normal line/curve plots
     # ---------------------
-    NORMAL_LINE = False
+    NORMAL_LINE = True
     if NORMAL_LINE:
         # fig, axs = figs_in_line(input_paths, labels, colors)
         # plt.tight_layout()
@@ -261,30 +261,20 @@ if __name__ == '__main__':
         # # get_sides(axs[0], colors)
         # # get_right(axs, colors)
         # # get_gustyRight(axs, colors)
-        # get_left(axs, colors)
+        get_left(axs, colors)
         # # get_gustyLeft(axs, colors)
         # get_gustySides(axs, colors)
-        get_PRETgustySides(axs, colors)
+        # get_PRETgustySides(axs, colors)
         
         fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
         fig.supylabel('average score')
-        fig.savefig("PRETgustySides.png")
+        fig.savefig("left.png")
     
     # -----------------------------------
     #   MultiBAR plots
     MULTIBAR = False
     if MULTIBAR:
         make_example_multibar()
-        
-    # -----------------------------------
-    #   HeatMap plots
-    HEATMAP = True
-    if HEATMAP:
-        # data = np.genfromtxt("running-heatmap.csv", delimiter=",", skip_header=True, usecols=range(1, 25))
-        # plt.imshow(data, cmap='hot', interpolation='nearest')
-        # plt.savefig("heatmap.png")
-        
-        import pandas as pd
         
     
 
