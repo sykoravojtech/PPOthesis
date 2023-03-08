@@ -11,23 +11,23 @@ import numpy as np
 import math
 
 # ------- ADJUSTABLES -------
-input_paths = [
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-24_17-00-49.433548/events.out.tfevents.1677254450.g04.1551953.0.v2",
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-24_17-23-48.526468/events.out.tfevents.1677255829.g01.2154405.0.v2",
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-27_22-24-03.054114/events.out.tfevents.1677533043.g04.1583837.0.v2",
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/pureEnv/2023-02-27_22-24-03.094545/events.out.tfevents.1677533043.g12.1928932.0.v2",
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.481500/events.out.tfevents.1677604878.a01.1440399.0.v2",
-    # "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.713632/events.out.tfevents.1677604879.a01.1440398.0.v2",
-    "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.1, 0.2]/events.out.tfevents.1677708004.a14.510925.0.v2",
-    "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.2, 0.3]/events.out.tfevents.1677708004.a14.510926.0.v2",
-    "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.3, 0.4]/events.out.tfevents.1677708004.a15.1610646.0.v2",
-    "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.4, 0.5]/events.out.tfevents.1677708003.a15.1610647.0.v2",
-    "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
-    ]
+# input_paths = [
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/noWind/2023-02-24_17-00-49.433548/events.out.tfevents.1677254450.g04.1551953.0.v2",
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/noWind/2023-02-24_17-23-48.526468/events.out.tfevents.1677255829.g01.2154405.0.v2",
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/noWind/2023-02-27_22-24-03.054114/events.out.tfevents.1677533043.g04.1583837.0.v2",
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/noWind/2023-02-27_22-24-03.094545/events.out.tfevents.1677533043.g12.1928932.0.v2",
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.481500/events.out.tfevents.1677604878.a01.1440399.0.v2",
+#     # "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/2023-02-28_18-21-18.713632/events.out.tfevents.1677604879.a01.1440398.0.v2",
+#     "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.1, 0.2]/events.out.tfevents.1677708004.a14.510925.0.v2",
+#     "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.2, 0.3]/events.out.tfevents.1677708004.a14.510926.0.v2",
+#     "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.3, 0.4]/events.out.tfevents.1677708004.a15.1610646.0.v2",
+#     "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.4, 0.5]/events.out.tfevents.1677708003.a15.1610647.0.v2",
+#     "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
+#     ]
 labels = ["a", "b", "c", "d", "e", "f"]
 colors = ['#023eff', '#ff7c00', '#1ac938', '#e8000b', '#8b2be2', '#9f4800', '#f14cc1', '#a3a3a3', '#ffc400', '#00d7ff']
 end = 300
-legend_curve_label = "PureEnv"
+legend_curve_label = "noWind"
 xlabel = 'steps'
 ylabel = 'Average Score'
 save_file = "plot.png"
@@ -116,45 +116,28 @@ def figs_in_line(input_paths, labels, colors):
     return fig, axs
 
 STEPS_POWER = 6 # xlabel 10^power and also xaxis / 10^power
-STEP_CUTOFF = 550
-def more_lines_in_one_graph(input_paths, ax, colors, title, labels = None):
+def more_lines_in_one_graph(input_paths, ax, colors, title, labels = None, step_cutoff = 550):
+    
     for i, path in enumerate(input_paths):
         s, v = get_data_from_tbfile(path)
         s = np.array(s) / math.pow(10, STEPS_POWER)
-        ax.plot(s[:STEP_CUTOFF], v[:STEP_CUTOFF], label = get_name_of_last_dir(path), color = colors[i])
+        if labels is None:
+            ax.plot(s[:step_cutoff], v[:step_cutoff], label = get_name_of_last_dir(path), color = colors[i])
+        else:
+            ax.plot(s[:step_cutoff], v[:step_cutoff], label = labels[i], color = colors[i])
     ax.set_title(title)
     ax.legend()
 
-def get_sides(ax, colors):
+def get_left(ax, colors):
     input_paths = [
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.1, 0.2]/events.out.tfevents.1677708004.a14.510925.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.2, 0.3]/events.out.tfevents.1677708004.a14.510926.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.3, 0.4]/events.out.tfevents.1677708004.a15.1610646.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.4, 0.5]/events.out.tfevents.1677708003.a15.1610647.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.1, 0.2]/events.out.tfevents.1677749342.a10.1201228.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.2, 0.3]/events.out.tfevents.1677790045.a10.1229252.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.3, 0.4]/events.out.tfevents.1677749342.a11.2517219.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.4, 0.5]/events.out.tfevents.1677749342.a11.2517220.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
-    more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from both sides")
-
-def get_gustySides(ax, colors):
-    input_paths = [
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.1, 0.2]/events.out.tfevents.1677864061.a10.1274552.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.2, 0.3]/events.out.tfevents.1677864060.a10.1274553.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.3, 0.4]/events.out.tfevents.1677864061.a11.2589115.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959448.a10.1330885.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
-    ]
-    
-    more_lines_in_one_graph(input_paths, ax, colors, "Gusty wind form both sides")
-
-def get_PRETgustySides(ax, colors):
-    input_paths = [
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.3, 0.4]/events.out.tfevents.1677865502.a10.1276572.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959687.a11.2645933.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
-    ]
-    
-    more_lines_in_one_graph(input_paths, ax, [colors[0], colors[1], colors[4]], "Gusty wind form both sides - Pretrained model without wind")
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Left wind", step_cutoff = 550)
 
 def get_right(ax, colors):
     input_paths = [
@@ -162,32 +145,10 @@ def get_right(ax, colors):
         "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.2, 0.3]/events.out.tfevents.1677749546.a10.1203168.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.3, 0.4]/events.out.tfevents.1677749546.a11.2519113.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/right/strength_[0.4, 0.5]/events.out.tfevents.1677749547.a11.2519114.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
-    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Right wind")
-    
-def get_gustyRight(ax, colors):
-    input_paths = [
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.1, 0.2]/events.out.tfevents.1677749527.a10.1202568.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.2, 0.3]/events.out.tfevents.1677749528.a10.1202569.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.3, 0.4]/events.out.tfevents.1677749528.a11.2518530.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.4, 0.5]/events.out.tfevents.1677749528.a11.2518531.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
-    ]
-    
-    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Right wind")
-    
-def get_left(ax, colors):
-    input_paths = [
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.1, 0.2]/events.out.tfevents.1677749342.a10.1201228.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.2, 0.3]/events.out.tfevents.1677790045.a10.1229252.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.3, 0.4]/events.out.tfevents.1677749342.a11.2517219.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/left/strength_[0.4, 0.5]/events.out.tfevents.1677749342.a11.2517220.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
-    ]
-    
-    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Left wind")
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous Right wind", step_cutoff = 550)
     
 def get_gustyLeft(ax, colors):
     input_paths = [
@@ -195,12 +156,57 @@ def get_gustyLeft(ax, colors):
         "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.2, 0.3]/events.out.tfevents.1677749452.a10.1201907.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.3, 0.4]/events.out.tfevents.1677749451.a11.2517891.0.v2",
         "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyLeft/strength_[0.4, 0.5]/events.out.tfevents.1677749452.a11.2517892.0.v2",
-        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/pureEnv/events.out.tfevents.1670670309.a06.1146630.0.v2"
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
     ]
     
-    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Left wind")
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Left wind", step_cutoff = 700)
+    
+def get_gustyRight(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.1, 0.2]/events.out.tfevents.1677749527.a10.1202568.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.2, 0.3]/events.out.tfevents.1677749528.a10.1202569.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.3, 0.4]/events.out.tfevents.1677749528.a11.2518530.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustyRight/strength_[0.4, 0.5]/events.out.tfevents.1677749528.a11.2518531.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty Right wind", step_cutoff = 450)
 
-def make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path = "multibar.png"):
+def get_sides(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.1, 0.2]/events.out.tfevents.1677708004.a14.510925.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.2, 0.3]/events.out.tfevents.1677708004.a14.510926.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.3, 0.4]/events.out.tfevents.1677708004.a15.1610646.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/sides/strength_[0.4, 0.5]/events.out.tfevents.1677708003.a15.1610647.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Continuous wind from both sides", step_cutoff = 450)
+
+def get_gustySides(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.1, 0.2]/events.out.tfevents.1677864061.a10.1274552.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.2, 0.3]/events.out.tfevents.1677864060.a10.1274553.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.3, 0.4]/events.out.tfevents.1677864061.a11.2589115.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959448.a10.1330885.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    
+    more_lines_in_one_graph(input_paths, ax, colors, "Gusty wind form both sides", step_cutoff = 700)
+
+def get_PRETgustySides(ax, colors):
+    input_paths = [
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.3, 0.4]/events.out.tfevents.1677865502.a10.1276572.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/PRETgustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959687.a11.2645933.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.3, 0.4]/events.out.tfevents.1677864061.a11.2589115.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/gustySides/strength_[0.4, 0.5]/events.out.tfevents.1677959448.a10.1330885.0.v2",
+        "/mnt/personal/sykorvo1/PPOthesis/ppo/BEST/noWind/events.out.tfevents.1670670309.a06.1146630.0.v2"
+    ]
+    PRETcolors =  ['#02b020', '#e8000b', '#7ce68e', '#db8186', '#8b2be2']
+    PRETlabels = ['PRET strength_[0.3, 0.4]', 'PRET strength_[0.4, 0.5]', 'strength_[0.3, 0.4]', 'strength_[0.4, 0.5]', 'noWind']
+    more_lines_in_one_graph(input_paths, ax, PRETcolors, "Gusty wind form both sides - Pretrained model without wind", PRETlabels, step_cutoff = 700)
+
+def make_multibar_plot(s1to2, s2to3, s3to4, s4to5, noWind, save_path = "multibar.png"):
     # set width of bar
     barWidth = 0.15
     fig, axs = plt.subplots()
@@ -209,7 +215,7 @@ def make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path = "multiba
     # that are the parameters of the function
     
     # Set position of bar on X axis
-    br1 = np.arange(len(pureEnv))
+    br1 = np.arange(len(noWind))
     br2 = [x + barWidth for x in br1]
     br3 = [x + barWidth for x in br2]
     br4 = [x + barWidth for x in br3]
@@ -220,13 +226,13 @@ def make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path = "multiba
     plt.bar(br2, s2to3,   color = colors[1], width = barWidth, edgecolor ='grey', label = 'strength_[0.2, 0.3]')
     plt.bar(br3, s3to4,   color = colors[2], width = barWidth, edgecolor ='grey', label = 'strength_[0.3, 0.4]')
     plt.bar(br4, s4to5,   color = colors[3], width = barWidth, edgecolor ='grey', label = 'strength_[0.4, 0.5]')
-    plt.bar(br5, pureEnv, color = colors[4], width = barWidth, edgecolor ='grey', label = 'pureEnv')
+    plt.bar(br5, noWind, color = colors[4], width = barWidth, edgecolor ='grey', label = 'noWind')
     
     # Adding Xticks
     plt.xlabel('Envs', fontweight ='bold', fontsize = 12)
     plt.ylabel('Average score over last 50 episodes', fontweight ='bold', fontsize = 12)
-    plt.xticks([r + barWidth*2 for r in range(len(pureEnv))],
-            ['pureEnv', 'left', 'gustyleft', 'right', 'gustyRight', 'sides', 'gustySides'])
+    plt.xticks([r + barWidth*2 for r in range(len(noWind))],
+            ['noWind', 'left', 'gustyleft', 'right', 'gustyRight', 'sides', 'gustySides'])
     
     plt.legend(bbox_to_anchor=(0.85,0.6), bbox_transform=plt.gcf().transFigure)
     plt.subplots_adjust(left=0.1, bottom=0.1, right=0.85)
@@ -237,8 +243,8 @@ def make_example_multibar(save_path = "multibar.png"):
     s2to3   = [3,1,4,2,3,1,2]
     s3to4   = [4,2,1,3,1,2,4]
     s4to5   = [3,1,2,4,3,1,3] 
-    pureEnv = [1,2,3,1,2,3,1]
-    make_multibar_plot(s1to2, s2to3, s3to4, s4to5, pureEnv, save_path)
+    noWind = [1,2,3,1,2,3,1]
+    make_multibar_plot(s1to2, s2to3, s3to4, s4to5, noWind, save_path)
 
 if __name__ == '__main__':
     
@@ -258,17 +264,17 @@ if __name__ == '__main__':
         
         fig, axs = plt.subplots(ncols=1, nrows=1)
         
-        # # get_sides(axs[0], colors)
-        # # get_right(axs, colors)
-        # # get_gustyRight(axs, colors)
-        get_left(axs, colors)
-        # # get_gustyLeft(axs, colors)
+        # get_left(axs, colors)
+        # get_right(axs, colors)
+        # get_gustyLeft(axs, colors)
+        # get_gustyRight(axs, colors)
+        # get_sides(axs, colors)
         # get_gustySides(axs, colors)
-        # get_PRETgustySides(axs, colors)
+        get_PRETgustySides(axs, colors)
         
         fig.supxlabel(f'steps ($10^{STEPS_POWER}$)')
         fig.supylabel('average score')
-        fig.savefig("left.png")
+        fig.savefig("PRETgustySides.png")
     
     # -----------------------------------
     #   MultiBAR plots
