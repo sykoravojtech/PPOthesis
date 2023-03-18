@@ -15,7 +15,7 @@ import csv
 
 import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
 
-RUN_FOR = 50
+RUN_FOR = 1
 
 
 PUREENV_MODEL = 'BEST/pureEnv/projectBEST'
@@ -177,8 +177,9 @@ def run_multiple_models(args, models_paths):
     return means, stds  
         
 # render models from one training which were after each other
-def run_following_models(args, epizodes, base_dir):
-    for ep in epizodes:
+def run_following_models(args, first_episode, last_episode, base_dir):
+    episodes = list(range(first_episode, last_episode + 1, 10))
+    for ep in episodes:
         path = os.path.join(base_dir, f"ep{ep}", f"ep{ep}_weights")
         # print(path)
         run_single_model(args, path) # PATHS[PATHS_INDEX]
@@ -267,14 +268,19 @@ if __name__ == '__main__':
     # mean, std = run_single_model(args, PATHS[PATHS_INDEX])
     # print(f"mean={mean:.2f} std = {std:.2f}")
     
-    # eps = list(range(170,311,10))
-    # run_following_models(args, eps, "archive/gustyLeft/3to4")
+    RUN_FOLLOWING_MODELS = True
+    if RUN_FOLLOWING_MODELS:
+        run_following_models(
+            args, 
+            first_episode = 10, 
+            last_episode = 260, 
+            base_dir =  "archive/PRETgustySides/4to5")
     
     # run_single_model(args, "archive/left/3to4/ep80/ep80_weights")
     
     # means, stds = run_multiple_models(args, PATHS)
     # names = [get_name_of_last_dir(path) for path in PATHS]
-    means, stds = run_single_model_on_all_envs(args, args.load_model, save_csv = True)
+    # means, stds = run_single_model_on_all_envs(args, args.load_model, save_csv = True)
     
     # run_multiple_models_on_all_envs(args, MODELS, save_csv = True)
     # run_multiple_models_on_all_envs(args, MODELS, save_csv = "TABLE.csv", csv_style = "combined")
