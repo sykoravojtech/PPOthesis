@@ -3,13 +3,12 @@ import os
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 from collections import defaultdict
-
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import Model
 import tensorflow_probability as tfp
-
 import numpy as np
+from typing import Tuple, List, Dict
 
 from actorcritic import get_ActorCritic_model
 from utils import *
@@ -17,7 +16,11 @@ from utils import *
 # import random
 
 class PPO:
-    def __init__(self, observation_space, action_space, entropy_coeff, gamma, gae_lambda, learning_rate, value_fun_coeff):
+    """
+    Deep Reinforcement Learning Agent acting using the Proximal Policy Optimization algorithm
+    """
+    
+    def __init__(self, observation_space: Tuple[float], action_space, entropy_coeff, gamma, gae_lambda, learning_rate, value_fun_coeff):
         self.gamma : float = gamma
         self.gae_lambda : float = gae_lambda
         self.model: Model = None

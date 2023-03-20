@@ -2,6 +2,9 @@ import argparse
 import json
 
 def create_parser():
+    """ 
+    Create the argument parser
+    """
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-entropy", "-c2", "--entropy_coeff", default=0.0071, type=float, help="Entropy coefficient (c2)") # 0.0

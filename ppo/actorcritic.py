@@ -4,6 +4,15 @@ from keras.models import Model
 # TODO make it into 2 functions, first for cnn model and second for actorcritic
 
 def get_ActorCritic_model(input_shape, action_space) -> Model:
+    """Create and return the Deep Neural Network Model using keras/TensorFlow 
+
+    Args:
+        input_shape : input shape of the initial layer
+        action_space : size of the output of the critic
+
+    Returns:
+        Model: the complete CNN Actor Critic model
+    """
     input = Input(shape=input_shape, name='input_cnn')
     cnn1 = Conv2D(filters=32, kernel_size=8, strides=4, activation='relu', name='conv2D_1')(input)
     cnn2 = Conv2D(64, 4, 2, activation='relu', name='conv2D_2')(cnn1)
