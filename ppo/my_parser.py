@@ -13,7 +13,8 @@ def create_parser():
     parser.add_argument("-gae", "--gae_lambda", default=0.9, type=float, help="gae_lambda") # 0.9-1
     parser.add_argument("-lr", "--learning_rate", default=2.5e-4, type=float, help="Learning rate - alpha.")
     parser.add_argument("--constant_lr", default=False, action="store_true", help="Constant or discounted learning rate")
-    parser.add_argument("-t", "--training_episodes", default=4000, type=int, help="Training episodes.")
+    parser.add_argument("-t", "--training_episodes", default=4000, type=int, help="Number of training episodes.")
+    parser.add_argument("-run", "--running_episodes", default=5, type=int, help="Number of episodes to run the model on")
     parser.add_argument("-s", "-horizon", "--steps_per_ep", default=2250, type=int, help="Steps per episode - since we have multiple envs we don't end when done")
     parser.add_argument("-b", "--batch_size", default=1024, type=int, help="Batch/minibatch size")
     parser.add_argument("-epochs", "--epochs_per_ep", default=3, type=int, help="Number of epochs per episode")
@@ -44,11 +45,11 @@ def create_parser():
     # parser.add_argument("--epsilon_final_at", default=2500, type=int, help="Training episodes.")
     return parser
     
-def save_args(args, save_path):
+def save_args(args: argparse.Namespace, save_path: str):
     with open(save_path, 'w') as f:
         json.dump(args.__dict__, f, indent=2)
 
-def load_args(args, load_path):
+def load_args(args: argparse.Namespace, load_path: str):
     with open(load_path, 'r') as f:
         args.__dict__ = json.load(f)
         

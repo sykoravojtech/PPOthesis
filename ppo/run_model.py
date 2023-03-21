@@ -4,120 +4,43 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 from os import truncate
 import gym
-from gym.wrappers import RecordVideo
 import numpy as np
+import csv
+from typing import Tuple, List
 
 from my_parser import create_parser
 from PPO import PPO
 from wrappers import *
 from utils import *
-import csv
+from model_paths import *
 
-import car_racing_environment # f"CarRacingFS{skip_frames}-v2"
-
-RUN_FOR = 1
-
-
-PUREENV_MODEL = 'BEST/pureEnv/projectBEST'
-LEFT_MODELS = [
-    'BEST/left/ep690_1to2',
-    'BEST/left/ep580_2to3',
-    'BEST/left/ep640_3to4',
-    'BEST/left/ep560_4to5'
-]
-GUSTYLEFT_MODELS = [
-    'BEST/gustyLeft/ep530_1to2',
-    'BEST/gustyLeft/ep390_2to3',
-    'BEST/gustyLeft/ep680_3to4',
-    'BEST/gustyLeft/ep690_4to5'
-]
-RIGHT_MODELS = [
-    'BEST/right/ep680_1to2',
-    'BEST/right/ep680_2to3',
-    'BEST/right/ep670_3to4',
-    'BEST/right/ep680_4to5'
-]
-GUSTYRIGHT_MODELS = [
-    'BEST/gustyRight/ep670_1to2',
-    'BEST/gustyRight/ep650_2to3',
-    'BEST/gustyRight/ep670_3to4',
-    'BEST/gustyRight/ep670_4to5'
-]
-SIDES_MODELS = [
-    'BEST/sides/ep400_1to2',
-    'BEST/sides/ep420_2to3',
-    'BEST/sides/ep820_3to4',
-    'BEST/sides/ep400_4to5'
-]
-GUSTYSIDES_MODELS = [
-    'BEST/gustySides/ep830_1to2',
-    'BEST/gustySides/ep1240_2to3',
-    'BEST/gustySides/ep760_3to4',
-    'BEST/gustySides/ep780_4to5'
-]
-MODELS = [
-    PUREENV_MODEL,
-    *LEFT_MODELS,
-    *GUSTYLEFT_MODELS,
-    *RIGHT_MODELS,
-    *GUSTYRIGHT_MODELS,
-    *SIDES_MODELS,
-    *GUSTYSIDES_MODELS,
+def make_single_env(args: argparse.Namespace) -> EvaluationEnv:
+    """ Create a non-vectorized environment with the basic wrappers applied
     
-    # 'BEST/left/ep810_0.1,0.2(358)',
-    # 'BEST/gustyLeft/ep960_0.1,0.2(500)',
-    # 'BEST/right/ep1220_0.1,0.2(435)',
-    # 'BEST/gustyRight/ep780_0.1,0.2(275)',
-]
-MODELS_INDEX = 0
-
-ALLENVS = [ # (wind_wrapper, strength, name_for_1st_column_of_csv)
-    (None, None, "pureEnv"),
-    ("left", [0.1, 0.2], "left1to2"),
-    ("left", [0.2, 0.3], "left2to3"),
-    ("left", [0.3, 0.4], "left3to4"),
-    ("left", [0.4, 0.5], "left4to5"),
-    ("gustyLeft", [0.1, 0.2], "gustyLeft1to2"),
-    ("gustyLeft", [0.2, 0.3], "gustyLeft2to3"),
-    ("gustyLeft", [0.3, 0.4], "gustyLeft3to4"),
-    ("gustyLeft", [0.4, 0.5], "gustyLeft4to5"),
-    ("right", [0.1, 0.2], "right1to2"),
-    ("right", [0.2, 0.3], "right2to3"),
-    ("right", [0.3, 0.4], "right3to4"),
-    ("right", [0.4, 0.5], "right4to5"),
-    ("gustyRight", [0.1, 0.2], "gustyRight1to2"),
-    ("gustyRight", [0.2, 0.3], "gustyRight2to3"),
-    ("gustyRight", [0.3, 0.4], "gustyRight3to4"),
-    ("gustyRight", [0.4, 0.5], "gustyRight4to5"),
-    ("sides", [0.1, 0.2], "sides1to2"),
-    ("sides", [0.2, 0.3], "sides2to3"),
-    ("sides", [0.3, 0.4], "sides3to4"),
-    ("sides", [0.4, 0.5], "sides4to5"),
-    ("gustySides", [0.1, 0.2], "gustySides1to2"),
-    ("gustySides", [0.2, 0.3], "gustySides2to3"),
-    ("gustySides", [0.3, 0.4], "gustySides3to4"),
-    ("gustySides", [0.4, 0.5], "gustySides4to5"),
-]
-ALLENVS_NAMES = [env[2] for env in ALLENVS]
-
-
-def make_single_env(args):
+    Args:
+        args: arguments 
+    """
     if args.render:
         env = gym.make(args.env, render_mode="human", continuous = True)
     else:
         env = gym.make(args.env, render_mode='rgb_array', continuous = True)
-    
-    # print(env.action_space)
-        
+            
     env = NormalizeObservation(env)
     env = ClippedAction(env, low=0, high=1)
     env = EvaluationEnv(env, render_each=args.render_each, evaluate_for=args.evaluate_for, report_each=args.report_each)
     return env
 
-def make_env(args):
-    single_env = make_single_env(args)
+
+def make_env(args: argparse.Namespace) -> Tuple[EvaluationEnv, gym.vector.SyncVectorEnv]:
+    """ Create a vectorized environment with the correct wind type
+
+    Args:
+        args: arguments
+    """
+    single_env: EvaluationEnv = make_single_env(args)
     
     if args.wind_strength != None or args.wind_range != None or args.nowind_range != None:
+        # add wind with specified parameters
         params = {}
         if args.wind_strength is not None:
             params["strength"] = args.wind_strength
@@ -127,22 +50,29 @@ def make_env(args):
             params["nonwind_step_range"] = args.nowind_range
         single_env = add_wind_wrapper(args.wind_wrapper, single_env, params)
     else:
+        # add the default version of a wind
         single_env = add_wind_wrapper(args.wind_wrapper, single_env)
     
+    # transform our single environment into a vectorized version
     env = gym.vector.SyncVectorEnv([lambda: single_env])
     
     return single_env, env
     
-def run_single_model(args, load_path):
     
+def run_single_model(args: argparse.Namespace, load_path: str) -> Tuple[float]:
+    """ Run/evaluate a single model
+
+    Args:
+        args (argparse.Namespace): _description_
+        load_path (str): _description_
+    """
+    # create a vectorized and non-vectorized environment
     single_env, env = make_env(args)
     
     # print_info(single_env, args)
     
-    # state, _ = env.reset()
-    # print(f"{state[0].shape=} {state[0][50]=}")
-    
-    ppo = PPO(observation_space = env.observation_space, 
+    # create a PPO agent
+    ppo: PPO = PPO(observation_space = env.observation_space, 
               action_space = env.action_space, 
               entropy_coeff = args.entropy_coeff,
               gamma = args.gamma,
@@ -155,7 +85,7 @@ def run_single_model(args, load_path):
     ppo.run(
         env,
         single_env, 
-        num_of_episodes = RUN_FOR,
+        num_of_episodes = args.running_episodes,
         render = args.render,
         record = args.record
         )
@@ -164,9 +94,15 @@ def run_single_model(args, load_path):
     # print(single_env.get_mean_std(verbose=True))
     return single_env.get_mean_std()    
     
-def run_multiple_models(args, models_paths):
-    means = []
-    stds = []
+def run_multiple_models(args: argparse.Namespace, models_paths: List[str]) -> Tuple[List[float], List[float]]:
+    """ Run all inputted models sequentially on the same environment
+
+    Args:
+        args: arguments
+        models_paths: list of paths to the models
+    """
+    means = [] # mean/average
+    stds = [] # standard deviation
     
     for path in models_paths:
         mean, std = run_single_model(args, path) # PATHS[PATHS_INDEX]
@@ -177,14 +113,25 @@ def run_multiple_models(args, models_paths):
     return means, stds  
         
 # render models from one training which were after each other
-def run_following_models(args, first_episode, last_episode, base_dir):
-    episodes = list(range(first_episode, last_episode + 1, 10))
+def run_following_models(args: argparse.Namespace, first_episode: int, last_episode: int, base_dir: str):
+    """ Run models saved after each other during training
+    This is mainly to visualize how the model learned
+
+    Args:
+        args: arguments
+        first_episode: from which episode weights should we start
+        last_episode: at which episode weights should we end
+        base_dir: the directory where all models are saved
+    """
+    episodes: List[int] = list(range(first_episode, last_episode + 1, 10))
     for ep in episodes:
-        path = os.path.join(base_dir, f"ep{ep}", f"ep{ep}_weights")
-        # print(path)
+        path: str = os.path.join(base_dir, f"ep{ep}", f"ep{ep}_weights")
         run_single_model(args, path) # PATHS[PATHS_INDEX]
 
-def write_to_csv(filename, rows):
+# *************************************
+# TODO CONTINUE HERE WITH CLEANUP
+# *************************************
+def write_to_csv(filename: str, rows):
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(rows)
@@ -212,7 +159,7 @@ def run_single_model_on_all_envs(args, load_path, save_csv = False):
         ppo.run(
             env,
             single_env, 
-            num_of_episodes = RUN_FOR,
+            num_of_episodes = args.running_episodes,
             render = args.render,
             record = args.record
             )
@@ -265,10 +212,12 @@ if __name__ == '__main__':
         
     args = create_parser().parse_args([] if "__file__" not in globals() else None)
     
-    # mean, std = run_single_model(args, PATHS[PATHS_INDEX])
-    # print(f"mean={mean:.2f} std = {std:.2f}")
+    RUN_SINGLE_MODEL = True
+    if RUN_SINGLE_MODEL:
+        mean, std = run_single_model(args, NOWIND_MODEL)
+        # print(f"mean={mean:.2f} std = {std:.2f}")
     
-    RUN_FOLLOWING_MODELS = True
+    RUN_FOLLOWING_MODELS = False
     if RUN_FOLLOWING_MODELS:
         run_following_models(
             args, 
