@@ -41,7 +41,7 @@ class ContinuousLeftWind(ActionWrapper):
         strength: strength of the wind / range for the percentage change of the action
     """
     
-    def __init__(self, env: Env, strength: tuple[float, float] = (0.1, 0.2)):
+    def __init__(self, env: Env, strength: tuple[float, float] = (0.4, 0.5)):
         super().__init__(env)
         self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
@@ -71,7 +71,7 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
     """
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.1, 0.2), 
+                 strength: tuple[float, float] = (0.4, 0.5), 
                  nonwind_step_range: tuple[float, float] = (10, 50), 
                  wind_step_range: tuple[float, float] = (20,50)
                  ):
@@ -127,7 +127,7 @@ class ContinuousRightWind(ActionWrapper):
         strength: strength of the wind / range for the percentage change of the action
     """
     
-    def __init__(self, env: Env, strength: tuple[float, float] = (0.1, 0.2)):
+    def __init__(self, env: Env, strength: tuple[float, float] = (0.4, 0.5)):
         super().__init__(env)
         self.strength = (1+strength[0], 1+strength[1])
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
@@ -160,7 +160,7 @@ class GustyRightWind(ActionWrapper): # nárazový vítr
     """
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.1, 0.2), 
+                 strength: tuple[float, float] = (0.4, 0.5), 
                  nonwind_step_range: tuple[float, float] = (10, 50), 
                  wind_step_range: tuple[float, float] = (20,50)
                  ):
@@ -224,7 +224,7 @@ class ContinuousSidesWind(ActionWrapper):
     
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.1, 0.2), 
+                 strength: tuple[float, float] = (0.4, 0.5), 
                  block_range: tuple[float, float] = (10,50), 
                  verbose: bool = False
                  ):
@@ -292,7 +292,7 @@ class GustySidesWind(ActionWrapper):
     
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.1, 0.2), 
+                 strength: tuple[float, float] = (0.4, 0.5), 
                  nonwind_step_range: tuple[float, float] = (10, 30), 
                  wind_step_range: tuple[float, float] = (50,100),
                  verbose: bool = False
