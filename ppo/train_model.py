@@ -1,25 +1,25 @@
-# Python Libraries
 import os
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")  # Report only TF errors by default
+
 import gym
 import numpy as np
 import argparse
 import tensorflow as tf
+from gym.vector.vector_env import VectorEnv
 
-# My Libraries
 from PPO import PPO
 from wrappers import *
 from my_parser import create_parser, save_args
 from utils import *
 
-def main(env, args: argparse.Namespace) -> None:
+def main(env: VectorEnv, args: argparse.Namespace) -> None:
     if args.seed is not None:
         tf.keras.utils.set_random_seed(args.seed)
     tf.config.threading.set_inter_op_parallelism_threads(args.threads)
     tf.config.threading.set_intra_op_parallelism_threads(args.threads)
     
     # create a specific folder for this training (usefull for parallel execution)
-    args.models_dir = create_dir_for_curr_runtime(args.models_dir)
+    args.models_dir: str = create_dir_for_curr_runtime(args.models_dir)
     # args.models_dir = create_subfolder(args.models_dir, f"strength_{args.wind_strength}")
 
     ppo = PPO(observation_space = env.observation_space, 
@@ -35,7 +35,7 @@ def main(env, args: argparse.Namespace) -> None:
     
     def lr_schedule(x): return x * args.learning_rate
     
-    logger = get_logger(args.models_dir, args.tensorboard)
+    logger = get_logger(args.models_dir, args.tensorboard) # tf.summary.SummaryWriter
     with logger.as_default():
         tf.summary.text('arguments', str(args.__dict__), step=1)
         
@@ -60,9 +60,9 @@ def main(env, args: argparse.Namespace) -> None:
 
 
 if __name__ == '__main__':    
-    args = create_parser().parse_args([] if "__file__" not in globals() else None)
+    args: argparse.Namespace = create_parser().parse_args([] if "__file__" not in globals() else None)
 
-    env = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
+    env: ClippedAction = gym.vector.make('CarRacing-v2', num_envs=args.num_envs,
                           wrappers=[NormalizeObservation, ClippedAction])
     
     if args.wind_strength != None or args.wind_range != None or args.nowind_range != None:

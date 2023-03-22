@@ -94,6 +94,7 @@ def run_single_model(args: argparse.Namespace, load_path: str) -> Tuple[float]:
     # print(single_env.get_mean_std(verbose=True))
     return single_env.get_mean_std()    
     
+    
 def run_multiple_models(args: argparse.Namespace, models_paths: List[str]) -> Tuple[List[float], List[float]]:
     """ Run all inputted models sequentially on the same environment
 
@@ -111,8 +112,8 @@ def run_multiple_models(args: argparse.Namespace, models_paths: List[str]) -> Tu
         print_divider()
         
     return means, stds  
+      
         
-# render models from one training which were after each other
 def run_following_models(args: argparse.Namespace, first_episode: int, last_episode: int, base_dir: str):
     """ Run models saved after each other during training
     This is mainly to visualize how the model learned
@@ -128,15 +129,27 @@ def run_following_models(args: argparse.Namespace, first_episode: int, last_epis
         path: str = os.path.join(base_dir, f"ep{ep}", f"ep{ep}_weights")
         run_single_model(args, path) # PATHS[PATHS_INDEX]
 
-# *************************************
-# TODO CONTINUE HERE WITH CLEANUP
-# *************************************
-def write_to_csv(filename: str, rows):
+
+def write_to_csv(filename: str, rows: List[str | float]):
+    """ Write the input to a CSV file
+
+    Args:
+        filename: name of the file to save rows in
+        rows: 2d array to save
+    """
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(rows)
 
-def run_single_model_on_all_envs(args, load_path, save_csv = False):
+
+def run_single_model_on_all_envs(args: argparse.Namespace, load_path: str, save_csv: bool = False) -> Tuple[List[float], List[float]]:
+    """ Run one model on all environments specified in ALLENVS
+
+    Args:
+        args: arguments 
+        load_path: path to the file to load weights from
+        save_csv: path to the csv file to save the output in
+    """
     single_env, env = make_env(args)
     
     ppo = PPO(observation_space = env.observation_space, 
@@ -164,7 +177,7 @@ def run_single_model_on_all_envs(args, load_path, save_csv = False):
             record = args.record
             )
         
-        mean, std = single_env.get_mean_std()
+        mean, std = single_env.get_mean_std() # mean, standard deviation
         means.append(mean)
         stds.append(std)
         
@@ -177,20 +190,29 @@ def run_single_model_on_all_envs(args, load_path, save_csv = False):
 
     return means, stds
 
-def run_multiple_models_on_all_envs(args, model_paths, save_csv = None, csv_style = "separate"):
+
+def run_multiple_models_on_all_envs(args: argparse.Namespace, model_paths: List[str], save_csv: str = None, csv_style: str = "separate"):
+    """ Evaluates every inputted model on all environments
+
+    Args:
+        args: arguments
+        model_paths: List of paths to models
+        save_csv: path to csv file in which we save the output 
+        csv_style: 'separate' means each model gets its own csv file, any other argument means we combine all outputs in one csv file
+    """
     if csv_style == "separate":
         for path in model_paths:
             print(f"\n{bcolors.RED}{'*' * 30}{bcolors.ENDC}")
             print_chapter_style(f"NEW MODEL: {path[5:]}")
-            if save_csv is not None:
+            if save_csv:
                 run_single_model_on_all_envs(args, path, save_csv = True)
             else:
                 run_single_model_on_all_envs(args, path)
     
     else: # together, combined, one large table
-        table_means = [ALLENVS_NAMES]
-        table_stds = [ALLENVS_NAMES]
-        first_col = ["."]
+        table_means: List[str | float] = [ALLENVS_NAMES]
+        table_stds: List[str | float] = [ALLENVS_NAMES]
+        first_col: List[str] = ["."]
         
         for path in model_paths:
             print(f"\n{bcolors.RED}{'*' * 30}{bcolors.ENDC}")
@@ -206,7 +228,6 @@ def run_multiple_models_on_all_envs(args, model_paths, save_csv = None, csv_styl
     
 if __name__ == '__main__':
     # show_terminal_colors()
-    
     # print_tensorflow_version()
     # print_available_devices()
         
@@ -216,6 +237,12 @@ if __name__ == '__main__':
     if RUN_SINGLE_MODEL:
         mean, std = run_single_model(args, NOWIND_MODEL)
         # print(f"mean={mean:.2f} std = {std:.2f}")
+        
+        
+    RUN_SINGLE__MODEL_ON_ALL_ENVS = False
+    if RUN_SINGLE__MODEL_ON_ALL_ENVS:
+        means, stds = run_single_model_on_all_envs(args, args.load_model, save_csv = False)
+    
     
     RUN_FOLLOWING_MODELS = False
     if RUN_FOLLOWING_MODELS:
@@ -225,14 +252,16 @@ if __name__ == '__main__':
             last_episode = 260, 
             base_dir =  "archive/PRETgustySides/4to5")
     
-    # run_single_model(args, "archive/left/3to4/ep80/ep80_weights")
     
-    # means, stds = run_multiple_models(args, PATHS)
-    # names = [get_name_of_last_dir(path) for path in PATHS]
-    # means, stds = run_single_model_on_all_envs(args, args.load_model, save_csv = True)
+    RUN_MULTIPLE_MODELS = False
+    if RUN_MULTIPLE_MODELS:   
+        means, stds = run_multiple_models(args, ALL_MODELS)
     
-    # run_multiple_models_on_all_envs(args, MODELS, save_csv = True)
-    # run_multiple_models_on_all_envs(args, MODELS, save_csv = "TABLE.csv", csv_style = "combined")
+    
+    RUN_MULTIPLE_MODELS_ON_ALL_ENVS = False
+    if RUN_MULTIPLE_MODELS_ON_ALL_ENVS: # takes over a day to complete with 50 episodes
+        run_multiple_models_on_all_envs(args, GUSTYSIDES_MODELS, save_csv = False)
+        # run_multiple_models_on_all_envs(args, GUSTYSIDES_MODELS, save_csv = "TABLE.csv", csv_style = "combined")
     
     
     

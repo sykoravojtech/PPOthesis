@@ -1,5 +1,9 @@
 import gym
 
+"""
+None of these unfortunately work on VectorEnvs, they work only on non-vectorized environments
+"""
+
 def monitoring():
     from gym.wrappers.monitoring.video_recorder import VideoRecorder
     video_path = "models/test_video.mp4"
