@@ -1,6 +1,25 @@
-# PPOthesis
 
-# Singularity container
+<!-- PROJECT Title -->
+<br />
+<div align="center">
+  <h1 align="center">Proximal Policy Optimization algorithm on a Car Racing environment with wind added</h1>
+
+  <p align="center">
+    <b>Bachelor thesis project at the Czech Technical University in Prague</b>
+  </p>
+  <p align="center">
+    <i>Author: Vojtěch Sýkora</i>
+  </p>
+</div>
+<!-- ----- -->
+
+## About the Project
+
+**Environment: CarRacing-v2**
+https://www.gymlibrary.dev/environments/box2d/car_racing/
+
+
+## Singularity container
 download .sif file of the tensorflow image
 ```
 singularity pull docker://tensorflow/tensorflow:2.10.0-gpu
