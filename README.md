@@ -150,10 +150,7 @@ cd /mnt/personal/sykorvo1/PPOthesis/ppo; singularity run --bind /mnt/personal/sy
 cd <singularity_file_dir>; singularity run --bind <project_dir>:<project_dir> --nv tensorflow_2.10.0-gpu.sif
 ```
 
-and now you have the terminal to run anything you like. For example
-```sh
-python run_model.py
-```
+and now you have the terminal to run anything you like.
 
 <!-- RUNNING AND TRAINING MODELS -->
 # Running and Training Models
