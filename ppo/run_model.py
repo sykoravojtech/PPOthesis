@@ -235,7 +235,7 @@ if __name__ == '__main__':
     
     RUN_SINGLE_MODEL = True
     if RUN_SINGLE_MODEL:
-        mean, std = run_single_model(args, NOWIND_MODEL)
+        mean, std = run_single_model(args, load_path = NOWIND_MODEL)
         # print(f"mean={mean:.2f} std = {std:.2f}")
         
         

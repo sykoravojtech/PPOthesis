@@ -34,7 +34,7 @@ def create_parser():
     parser.add_argument("--report_each", default=1, type=int, help="Print each nth episode a report")
     parser.add_argument("--evaluate_for", default=50, type=int, help="Evaluate mean score for N episodes")
     parser.add_argument("--render_each", default=0, type=int, help="Render each nth episode as human viewable")
-    parser.add_argument("-wind", "-wrapper", "--wind_wrapper", default=None, help = "which wind wrapper to use")
+    parser.add_argument("-wind", "-wrapper", "--wind_wrapper", default=None, help = "which wind wrapper to use from [left, gustyleft, right, gustyright, sides, gustysides], defaults to no wind")
     parser.add_argument("-strength", "--wind_strength", default=None, type=float, nargs='+', help="wind strength")
     parser.add_argument("--nowind_range", default=None, type=int, nargs='+', help="range for wrapper")
     parser.add_argument("--wind_range", default=None, type=int, nargs='+', help="range for wrapper")
