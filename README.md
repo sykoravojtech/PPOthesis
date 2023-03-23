@@ -82,19 +82,17 @@ Our Actor-Critic Deep Convolutional Neural Network was as follows:
 ![cnn_model](images/network-structure.png)
 
 Performing well with these hyperparameters:
-$$
-\begin{align*}
-    \text{horizon} &= 2250\\
-    \text{mini-batch size} &= 1024\\
-    \text{epochs per episode} &= 3\\
-    \text{gamma} &= 0.99\\
-    \text{clipping range} &= 0.15\\
-    \text{gae lambda} &= 0.9\\
-    \text{value function coefficient} &= 0.64\\
-    \text{entropy coefficient} &= 0.0071\\
-    \text{learning rate} &= 2.5e\text{--}4\\
-\end{align*}
-$$
+<div align="center">
+    <p>horizon = 2250</p>
+    <p>mini-batch size = 1024</p>
+    <p>epochs per episode = 3</p>
+    <p>gamma = 0.99</p>
+    <p>clipping range = 0.15</p>
+    <p>gae lambda = 0.9</p>
+    <p>value function coefficient = 0.64</p>
+    <p>entropy coefficient = 0.0071</p>
+    <p>learning rate = 2.5e–4</p>
+</div>
 
 
 <!-- SOFTWARE USED -->
