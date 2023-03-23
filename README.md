@@ -40,7 +40,7 @@
       </ul>
     </li>
     <li>
-      <a href="#running-and-training-models">Running and Training Models</a>
+      <a href="#running--training-models">Running & Training Models</a>
       <ul>
         <li><a href="#how-to-run-a-saved-model">How to run a saved model</a></li>
         <li><a href="#how-to-train-a-model">How to train a model</a></li>
@@ -151,7 +151,7 @@ cd <singularity_file_dir>; singularity run --bind <project_dir>:<project_dir> --
 and now you have the terminal to run anything you like.
 
 <!-- RUNNING AND TRAINING MODELS -->
-# Running and Training Models
+# Running & Training Models
 
 ## How to run a saved model
 All paths to saved trained model are in the file `ppo/model_paths.py` which has them neatly assigned to variables. You can use these at the bottom of the file `ppo/run_model.py` where you can choose how many model to run on how many environments. 
