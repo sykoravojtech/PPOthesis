@@ -8,6 +8,7 @@ from keras.models import Model
 from time import sleep
 import random
 from gym.vector.vector_env import VectorEnv
+from typing import List, Union
 
 from my_parser import *
 
@@ -111,7 +112,7 @@ def create_dir_for_curr_runtime(models_dir: str) -> str:
     return models_dir
 
 
-def save_pltgraph(avg_score_history: list[float], chkpt_dir: str, e: int, start_from_ep: int) -> None:
+def save_pltgraph(avg_score_history: List[float], chkpt_dir: str, e: int, start_from_ep: int) -> None:
     """ Save an image of a plot showing the average score history
 
     Args:
@@ -203,14 +204,14 @@ def get_name_of_last_dir(path: str) -> str:
     return os.path.basename(os.path.dirname(path))
 
 
-def round_list(lst: list[float], decimals: int = 2) -> list[float]:
+def round_list(lst: List[float], decimals: int = 2) -> List[float]:
     """
     Round all of the numbers in the list to the given number of decimal places
     """
     return [round(x, decimals) for x in lst]
 
 
-def add_col_to_start(rows: list[str | float], col: list[str]) -> list[str | float]:
+def add_col_to_start(rows: List[Union[str, float]], col: List[str]) -> List[Union[str, float]]:
     """Add the column with model names to the start of the rows matrix
     It is used for saving the csv files of running model tests.
     
