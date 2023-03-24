@@ -154,7 +154,7 @@ and now you have the terminal to run anything you like.
 # Running & Training Models
 
 ## How to run a saved model
-All paths to saved trained model are in the file `ppo/model_paths.py` which has them neatly assigned to variables. You can use these at the bottom of the file `ppo/run_model.py` where you can choose how many model to run on how many environments. 
+All paths to saved trained model are in the file `ppo/model_paths.py` which has them neatly assigned to variables. You can use these at the bottom of the file `ppo/run_model.py` where you can choose how many models to run on how many environments. 
 
 The default noWind model on a noWind environment is run using
 ```sh
