@@ -160,7 +160,7 @@ The default noWind model on a noWind environment is run using
 ```sh
 python run_model.py
 ```
-this will show the scores obtained in the terminal. If you want to render the image, add `-render` at the end of the command. To run for a different number of episodes add `-run=<number>` at the end of the command. If you wanted to change any other parameters, go to `ppo/my_parser.py` for more information.
+this will show the scores obtained in the terminal. If you want to render the image, add `-render` at the end of the command. To run for a different number of episodes add `-run=<number>` at the end of the command. If you wanted to change any other parameters, go to `ppo/my_parser.py` for more information (or run `python run_model.py --help`).
 
 To change the wind add `-wind=<wind_name>` to the command. The wind names are `[left, gustyleft, right, gustyright, sides, gustysides]` and if none is specified, there will be no wind acting on the car.
 
