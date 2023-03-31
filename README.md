@@ -63,6 +63,8 @@ In this thesis, we will modify the car racing environment by introducing wind th
 
 By investigating the impact of an outside and unpredictable factor such as wind on the learning of our agent, this project aims to contribute to the development of more robust and reliable self-driving vehicles.
 
+The thesis can be found in ![PPO_Thesis_Sykora.pdf](PPO_Thesis_Sykora.pdf)
+
 ### Environment
 
 CarRacing-v2 from OpenAI's gym library (for python). The environment was modified using Action wrappers.
