@@ -5,7 +5,7 @@
   <h1 align="center">Proximal Policy Optimization algorithm on a Car Racing environment with wind added</h1>
 
   <p align="center">
-    <b>Bachelor thesis project at the Czech Technical University in Prague</b>
+    <b>Bachelor thesis at the Czech Technical University in Prague</b>
   </p>
   <p align="center">
     <i>Author: Vojtěch Sýkora</i>
@@ -40,7 +40,7 @@
       </ul>
     </li>
     <li>
-      <a href="#running-and-training-models">Running and Training Models</a>
+      <a href="#running--training-models">Running & Training Models</a>
       <ul>
         <li><a href="#how-to-run-a-saved-model">How to run a saved model</a></li>
         <li><a href="#how-to-train-a-model">How to train a model</a></li>
@@ -153,16 +153,16 @@ cd <singularity_file_dir>; singularity run --bind <project_dir>:<project_dir> --
 and now you have the terminal to run anything you like.
 
 <!-- RUNNING AND TRAINING MODELS -->
-# Running and Training Models
+# Running & Training Models
 
 ## How to run a saved model
-All paths to saved trained model are in the file `ppo/model_paths.py` which has them neatly assigned to variables. You can use these at the bottom of the file `ppo/run_model.py` where you can choose how many model to run on how many environments. 
+All paths to saved trained model are in the file `ppo/model_paths.py` which has them neatly assigned to variables. You can use these at the bottom of the file `ppo/run_model.py` where you can choose how many models to run on how many environments. 
 
 The default noWind model on a noWind environment is run using
 ```sh
 python run_model.py
 ```
-this will show the scores obtained in the terminal. If you want to render the image, add `-render` at the end of the command. To run for a different number of episodes add `-run=<number>` at the end of the command. If you wanted to change any other parameters, go to `ppo/my_parser.py` for more information.
+this will show the scores obtained in the terminal. If you want to render the image, add `-render` at the end of the command. To run for a different number of episodes add `-run=<number>` at the end of the command. If you wanted to change any other parameters, go to `ppo/my_parser.py` for more information (or run `python run_model.py --help`).
 
 To change the wind add `-wind=<wind_name>` to the command. The wind names are `[left, gustyleft, right, gustyright, sides, gustysides]` and if none is specified, there will be no wind acting on the car.
 

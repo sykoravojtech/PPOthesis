@@ -3,6 +3,7 @@ from gym.spaces.box import Box
 import numpy as np
 import sys, os
 from random import randint, uniform, choice
+from typing import Tuple
 
 from utils import *
 
@@ -22,10 +23,10 @@ class ClippedAction(ActionWrapper):
         super().__init__(env)
         self.old_low: int = env.action_space.low
         self.old_high: int = env.action_space.high
-        shape: tuple[int] = env.action_space.shape
+        shape: Tuple[int] = env.action_space.shape
         self.action_space: Box = Box(low=low, high=high, shape=shape)
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         l, h = self.action_space.low, self.action_space.high
         L, H = self.old_low, self.old_high
 
@@ -41,15 +42,15 @@ class ContinuousLeftWind(ActionWrapper):
         strength: strength of the wind / range for the percentage change of the action
     """
     
-    def __init__(self, env: Env, strength: tuple[float, float] = (0.4, 0.5)):
+    def __init__(self, env: Env, strength: Tuple[float, float] = (0.4, 0.5)):
         super().__init__(env)
         self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action.
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
         self.parallel = len(env.action_space.shape) == 2
         print_notification_style(f"ContinuousLeftWind:\n\t{strength=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:
-        new_action: tuple[float] = np.copy(action)
+    def action(self, action: Tuple[float]) -> Tuple[float]:
+        new_action: Tuple[float] = np.copy(action)
         curr_strength: float = uniform(*self.strength)
         
         if self.parallel: # vecenv, parallel environments
@@ -71,9 +72,9 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
     """
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.4, 0.5), 
-                 nonwind_step_range: tuple[float, float] = (10, 50), 
-                 wind_step_range: tuple[float, float] = (20,50)
+                 strength: Tuple[float, float] = (0.4, 0.5), 
+                 nonwind_step_range: Tuple[float, float] = (10, 50), 
+                 wind_step_range: Tuple[float, float] = (20,50)
                  ):
         super().__init__(env)
         self.strength = (1-strength[0], 1-strength[1]) # 1 - x because left means lowering the number. 10% strength means we get 90% of the action. This is strength range
@@ -88,7 +89,7 @@ class GustyLeftWind(ActionWrapper): # nárazový vítr
         self.parallel = len(env.action_space.shape) == 2
         print_notification_style(f"GustyLeftWind:\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         self.curr_step += 1
         if self.wind: # apply wind
             self.wind_step += 1
@@ -127,14 +128,14 @@ class ContinuousRightWind(ActionWrapper):
         strength: strength of the wind / range for the percentage change of the action
     """
     
-    def __init__(self, env: Env, strength: tuple[float, float] = (0.4, 0.5)):
+    def __init__(self, env: Env, strength: Tuple[float, float] = (0.4, 0.5)):
         super().__init__(env)
         self.strength = (1+strength[0], 1+strength[1])
         self.index = 0 # action[0] is controlling left right movement, left is 0 right is 1
         self.parallel = len(env.action_space.shape) == 2
         print_notification_style(f"ContinuousRightWind:\n\t{strength=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         new_action = np.copy(action)
         curr_strength = uniform(*self.strength)
         
@@ -160,9 +161,9 @@ class GustyRightWind(ActionWrapper): # nárazový vítr
     """
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.4, 0.5), 
-                 nonwind_step_range: tuple[float, float] = (10, 50), 
-                 wind_step_range: tuple[float, float] = (20,50)
+                 strength: Tuple[float, float] = (0.4, 0.5), 
+                 nonwind_step_range: Tuple[float, float] = (10, 50), 
+                 wind_step_range: Tuple[float, float] = (20,50)
                  ):
         super().__init__(env)
         self.strength = (1+strength[0], 1+strength[1])
@@ -177,7 +178,7 @@ class GustyRightWind(ActionWrapper): # nárazový vítr
         self.parallel = len(env.action_space.shape) == 2
         print_notification_style(f"GustyRightWind:\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         self.curr_step += 1
         if self.wind: # apply wind
             self.wind_step += 1
@@ -224,8 +225,8 @@ class ContinuousSidesWind(ActionWrapper):
     
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.4, 0.5), 
-                 block_range: tuple[float, float] = (10,50), 
+                 strength: Tuple[float, float] = (0.4, 0.5), 
+                 block_range: Tuple[float, float] = (10,50), 
                  verbose: bool = False
                  ):
         super().__init__(env)
@@ -240,7 +241,7 @@ class ContinuousSidesWind(ActionWrapper):
         self.verbose = verbose
         print_notification_style(f"ContinuousSidesWind:\n\tstarting = {'RIGHT' if self.direction == RIGHT else 'LEFT'}\n\t{strength=}\n\t{block_range=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         new_action = np.copy(action)
         
         if self.direction == RIGHT:
@@ -292,9 +293,9 @@ class GustySidesWind(ActionWrapper):
     
     def __init__(self, 
                  env: Env, 
-                 strength: tuple[float, float] = (0.4, 0.5), 
-                 nonwind_step_range: tuple[float, float] = (10, 30), 
-                 wind_step_range: tuple[float, float] = (50,100),
+                 strength: Tuple[float, float] = (0.4, 0.5), 
+                 nonwind_step_range: Tuple[float, float] = (10, 30), 
+                 wind_step_range: Tuple[float, float] = (50,100),
                  verbose: bool = False
                  ):
         super().__init__(env)
@@ -312,7 +313,7 @@ class GustySidesWind(ActionWrapper):
         self.wind = False
         print_notification_style(f"GustySidesWind:\n\tstart = {'RIGHT' if self.direction == RIGHT else 'LEFT'}\n\tstrength_range={strength}\n\t{nonwind_step_range=}\n\t{wind_step_range=}\n\t{self.parallel=}")
 
-    def action(self, action: tuple[float]) -> tuple[float]:        
+    def action(self, action: Tuple[float]) -> Tuple[float]:        
         if self.wind: # apply wind
             self.wind_step += 1
             new_action = np.copy(action)
@@ -366,7 +367,7 @@ class PrintAction(ActionWrapper):
         super().__init__(env)
         self.x = 0
 
-    def action(self, action: tuple[float]) -> tuple[float]:
+    def action(self, action: Tuple[float]) -> Tuple[float]:
         self.x += 1
         print(f"ActionWrapper({self.x}): {action}")
         return action
@@ -412,7 +413,7 @@ class NormalizeObservation(ObservationWrapper):
         low: float = np.mean(self.observation_space.low)
         high: float = np.mean(self.observation_space.high)
         # print(f"\tNormalizeObservation Wrapper: {low=} {high=}")
-        shape: tuple[int] = env.observation_space.shape
+        shape: Tuple[int] = env.observation_space.shape
         self.observation_space: Box = Box(low, high, shape=shape, dtype='float32')
 
     @staticmethod
@@ -542,7 +543,7 @@ class EvaluationEnv(Wrapper):
     def get_std(self) -> float:
         return np.std(self._episode_returns[-self._evaluate_for:])
     
-    def get_mean_std(self, verbose: bool = False) -> tuple[float, float]:
+    def get_mean_std(self, verbose: bool = False) -> Tuple[float, float]:
         if verbose:
             print(f"{bcolors.GREEN}Episode {self.episode}, mean {self._evaluate_for}-episode return "
                     f"{np.mean(self._episode_returns[-self._evaluate_for:]):.2f} "

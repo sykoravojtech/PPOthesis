@@ -6,7 +6,7 @@ from os import truncate
 import gym
 import numpy as np
 import csv
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 from my_parser import create_parser
 from PPO import PPO
@@ -130,7 +130,7 @@ def run_following_models(args: argparse.Namespace, first_episode: int, last_epis
         run_single_model(args, path) # PATHS[PATHS_INDEX]
 
 
-def write_to_csv(filename: str, rows: List[str | float]):
+def write_to_csv(filename: str, rows: List[Union[str, float]]):
     """ Write the input to a CSV file
 
     Args:
@@ -210,8 +210,8 @@ def run_multiple_models_on_all_envs(args: argparse.Namespace, model_paths: List[
                 run_single_model_on_all_envs(args, path)
     
     else: # together, combined, one large table
-        table_means: List[str | float] = [ALLENVS_NAMES]
-        table_stds: List[str | float] = [ALLENVS_NAMES]
+        table_means: List[Union[str, float]] = [ALLENVS_NAMES]
+        table_stds: List[Union[str, float]] = [ALLENVS_NAMES]
         first_col: List[str] = ["."]
         
         for path in model_paths:
