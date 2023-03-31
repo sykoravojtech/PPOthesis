@@ -5,7 +5,7 @@
   <h1 align="center">Proximal Policy Optimization algorithm on a Car Racing environment with wind added</h1>
 
   <p align="center">
-    <b>Bachelor thesis project at the Czech Technical University in Prague</b>
+    <b>Bachelor thesis at the Czech Technical University in Prague</b>
   </p>
   <p align="center">
     <i>Author: Vojtěch Sýkora</i>
