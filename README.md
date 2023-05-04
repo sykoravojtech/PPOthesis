@@ -118,7 +118,7 @@ The access to the computational infrastructure of the OP VVV funded project CZ.0
 <!-- GETTING STARTED -->
 # Getting started
 
-First we need to install the python libraries used in this project. This can be done in 2 ways either by creating a Anaconda environment or by creating a Singularity image. Using an anaconda environment is much easier.
+First we need to install the python libraries used in this project. This can be done in 2 ways either by creating a Anaconda environment or by creating a Singularity image.
 
 ## Anaconda Environment
 Download Anaconda from https://www.anaconda.com/products/distribution
@@ -131,7 +131,11 @@ Now activate the environment.
 ```sh
 conda activate tf210
 ```
-Now all libraries should be installed, however when rendering the car racing environment there are often many issues specific to you. It works best on a Linux machine. Without the image rendering, no problems should come up.
+You may need to additionally install
+```sh
+pip install gym[box2d]
+```
+Now all libraries should be installed, however when rendering the car racing environment there are often many issues specific to you. And even without image rendering it may have issues. Honestly the Box2D class is an absolute nightmare. I could not make it work on Windows but it worked on Linux (Ubuntu).
 
 ## Singularity container
 Download .sif file of the TensorFlow image
