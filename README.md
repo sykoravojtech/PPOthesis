@@ -71,7 +71,7 @@ CarRacing-v2 from OpenAI's gym library (for python). The environment was modifie
 
 https://www.gymlibrary.dev/environments/box2d/car_racing/
 
-<!-- ADD VIDEO of the noWind env and image OF THE ENVIRONMENT HERE -->
+![Car Driving](https://raw.githubusercontent.com/sykoravojtech/PPOCarRacing/main/car-driving.gif)
 
 ### Algorithm
 Proximal Policy Optimization algorithm (PPO)
